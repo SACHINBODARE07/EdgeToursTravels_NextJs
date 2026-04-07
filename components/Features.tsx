@@ -16,7 +16,7 @@ export default function Features() {
             </div>
             <h3 className="text-2xl font-bold text-[#0A1128] mb-4">Unmatched Precision</h3>
             <p className="text-gray-500 leading-relaxed">
-              Our logistics engine tracks every Cabs and traffic pattern in real-time. Whether it's a 3 AM arrival or a last-minute schedule shift, your Voyager concierge is already two steps ahead.
+              Our logistics engine tracks every Cabs and traffic pattern in real-time. Whether it's a 3 AM arrival or a last-minute schedule shift, your Edge Tours and Travels concierge is already two steps ahead.
             </p>
           </div>
           <div className="mt-12 flex items-center space-x-4 border-t border-gray-100 pt-6">
