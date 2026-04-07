@@ -5,10 +5,9 @@ export default function Hero() {
     <header className="relative h-[600px] flex flex-col items-center justify-center text-center px-4">
       <div
         className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/hero_bg.jpg')" }}
+        style={{ backgroundImage: "url('/images/hero_bg.png')" }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-[#F8F9FA] to-transparent"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
       <div className="relative z-10 mt-16 max-w-4xl">
