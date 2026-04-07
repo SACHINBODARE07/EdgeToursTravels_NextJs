@@ -58,7 +58,7 @@ export default function BuildPackagePage() {
                      </div>
                   </div>
                   <div className="pt-8 border-t border-white/10">
-                     <p className="text-xs text-gray-400 italic">"Design a voyage that reflects your stature and requirements."</p>
+                     <p className="text-xs text-gray-400 italic">"Design a journey that reflects your stature and requirements."</p>
                   </div>
                </div>
                

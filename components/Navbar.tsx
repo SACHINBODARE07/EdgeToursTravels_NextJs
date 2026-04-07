@@ -26,7 +26,7 @@ export default function Navbar() {
 
         {/* Services dropdown unchanged */}
         <div className="relative group cursor-pointer h-full flex items-center">
-          <span className={`transition flex items-center gap-1 py-1 ${pathname.includes('/services') ? 'text-[#0A1128]' : 'text-gray-600 hover:text-black'}`}>
+          <span className={`transition flex items-center gap-1 py-1 ${pathname.includes('/services') ? 'text-[#FFB800] border-b-2 border-[#FFB800]' : 'text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-200'}`}>
             Services
             <svg className="w-3 h-3 group-hover:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />

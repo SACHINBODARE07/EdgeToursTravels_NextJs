@@ -8,7 +8,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Voyager - Travel with Absolute Authority",
+  title: "Edge Tours and Travels",
   description: "The world's most refined booking engine for global elites.",
 };
 
