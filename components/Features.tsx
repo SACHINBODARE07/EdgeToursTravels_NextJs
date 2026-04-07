@@ -39,7 +39,7 @@ export default function Features() {
             </div>
             <div className="absolute right-0 top-0 w-64 h-full bg-blue-900/30 rounded-l-full blur-2xl"></div>
             <div className="absolute right-10 z-10 opacity-50">
-               <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l3 5v6H3V7h5m14 0v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2m14 0h-4v5h4V7zM5 18a2 2 0 100-4 2 2 0 000 4zm14 0a2 2 0 100-4 2 2 0 000 4z" /></svg>
+              <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l3 5v6H3V7h5m14 0v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2m14 0h-4v5h4V7zM5 18a2 2 0 100-4 2 2 0 000 4zm14 0a2 2 0 100-4 2 2 0 000 4z" /></svg>
             </div>
           </div>
 
