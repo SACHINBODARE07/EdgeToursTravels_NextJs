@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getAuthToken } from '@/lib/auth';
-import { HiSearch, HiPlus } from 'react-icons/hi';
+import { HiSearch, HiPlus, HiOutlineEye } from 'react-icons/hi';
 import Image from 'next/image';
 
 function EmployeesPage() {
@@ -100,10 +100,10 @@ function EmployeesPage() {
   );
 
   return (
-    <div className="p-6 space-y-4 animate-in fade-in duration-500">
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+    <div className="-mt-8 -mx-8 animate-in fade-in duration-500">
+      <div className="bg-white border-b border-slate-200 overflow-hidden">
         {/* Header Toolbar */}
-        <div className="bg-[#f8f9fa] p-4 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200">
+        <div className="bg-[#f8f9fa] py-2 px-4 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
             Users <span className="text-slate-400 font-normal">({employees.length})</span>
           </h2>
@@ -133,17 +133,18 @@ function EmployeesPage() {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-white border-b border-slate-200">
-                <th className="px-6 py-3 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Name</th>
-                <th className="px-6 py-3 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Username</th>
-                <th className="px-6 py-3 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Email</th>
-                <th className="px-6 py-3 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Role</th>
-                <th className="px-6 py-3 text-left text-[13px] font-bold text-slate-700">Status</th>
+                <th className="px-6 py-2 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Name</th>
+                <th className="px-6 py-2 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Username</th>
+                <th className="px-6 py-2 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Email</th>
+                <th className="px-6 py-2 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Role</th>
+                <th className="px-6 py-2 text-left text-[13px] font-bold text-slate-700 border-r border-slate-200">Status</th>
+                <th className="px`-6 py-2 text-left text-[13px] font-bold text-slate-700">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredEmployees.map((emp: any) => (
                 <tr key={emp._id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-3 text-sm font-medium text-slate-800 border-r border-slate-200">
+                  <td className="px-6 py-1.5 text-sm font-medium text-slate-800 border-r border-slate-200">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center bg-green-100 text-green-700 font-bold text-xs ring-1 ring-green-200 flex-shrink-0">
                         {getInitials(emp.name)}
@@ -151,14 +152,19 @@ function EmployeesPage() {
                       <span className="truncate">{formatName(emp.name)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-sm text-slate-600 border-r border-slate-200">{emp.username}</td>
-                  <td className="px-6 py-3 text-sm text-slate-600 border-r border-slate-200">{emp.email}</td>
-                  <td className="px-6 py-3 text-sm text-slate-600 font-medium border-r border-slate-200">{emp.role}</td>
-                  <td className="px-6 py-3 text-sm">
+                  <td className="px-6 py-1.5 text-sm text-slate-600 border-r border-slate-200">{emp.username}</td>
+                  <td className="px-6 py-1.5 text-sm text-slate-600 border-r border-slate-200">{emp.email}</td>
+                  <td className="px-6 py-1.5 text-sm text-slate-600 font-medium border-r border-slate-200">{emp.role}</td>
+                  <td className="px-6 py-1.5 text-sm border-r border-slate-200">
                     <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${emp.status === 'Active' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-600 border border-red-100'
                       }`}>
                       {emp.status || 'Active'}
                     </span>
+                  </td>
+                  <td className="px-6 py-1.5 text-sm text-center">
+                    <button className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-all duration-200" title="View Details">
+                      <HiOutlineEye className="text-xl" />
+                    </button>
                   </td>
                 </tr>
               ))}

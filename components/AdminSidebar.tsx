@@ -11,12 +11,15 @@ import {
   HiOutlineStar, 
   HiOutlineCurrencyDollar, 
   HiOutlineBriefcase,
-  HiOutlineLogout
+  HiOutlineLogout,
+  HiOutlineUser,
+  HiOutlineIdentification,
+  HiOutlineCog
 } from 'react-icons/hi';
-import { clearAuthData } from '@/lib/auth';
+import { clearAuthData, getStoredUser } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
-const sidebarItems = [
+const adminItems = [
   { name: 'Dashboard', icon: HiOutlineViewGrid, href: '/admin-dashboard' },
   { name: 'Drivers', icon: HiOutlineUsers, href: '/admin-dashboard/drivers' },
   { name: 'Availability', icon: HiOutlineCalendar, href: '/admin-dashboard/availability' },
@@ -26,9 +29,26 @@ const sidebarItems = [
   { name: 'Government/Private', icon: HiOutlineBriefcase, href: '/admin-dashboard/type' },
 ];
 
+const employeeItems = [
+  { name: 'Dashboard', icon: HiOutlineViewGrid, href: '/employee-dashboard' },
+  { name: 'Profile', icon: HiOutlineUser, href: '/employee-dashboard/profile' },
+  { name: 'Kyc', icon: HiOutlineIdentification, href: '/employee-dashboard/kyc' },
+  { name: 'Settings', icon: HiOutlineCog, href: '/employee-dashboard/settings' },
+];
+
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [items, setItems] = React.useState(adminItems);
+
+  React.useEffect(() => {
+    const user = getStoredUser();
+    if (user?.role === 'employee') {
+      setItems(employeeItems);
+    } else {
+      setItems(adminItems);
+    }
+  }, []);
 
   const handleLogout = () => {
     clearAuthData();
@@ -45,7 +65,7 @@ export default function AdminSidebar() {
 
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="space-y-1">
-          {sidebarItems.map((item) => {
+          {items.map((item) => {
             const isActive = pathname === item.href;
             return (
               <li key={item.name}>
