@@ -37,7 +37,7 @@ export default function Offers() {
           </div>
           <div className="p-6 flex flex-col justify-between h-1/2">
             <div>
-              <h3 className="text-xl font-bold text-[#0A1128] mb-2">Inter-State VIP Transfers</h3>
+              <h3 className="text-xl font-bold text-[#0A1128] mb-2"> VIP Transfers</h3>
               <p className="text-sm text-gray-500 leading-relaxed">Book 10 inter-city transfers between Lucknow and Delhi, and receive Rs 2500 credit toward your next ride.</p>
             </div>
             <div className="flex justify-between items-end">
