@@ -1,0 +1,80 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { 
+  HiOutlineViewGrid, 
+  HiOutlineUsers, 
+  HiOutlineCalendar, 
+  HiOutlineUserGroup, 
+  HiOutlineStar, 
+  HiOutlineCurrencyDollar, 
+  HiOutlineBriefcase,
+  HiOutlineLogout
+} from 'react-icons/hi';
+import { clearAuthData } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
+
+const sidebarItems = [
+  { name: 'Dashboard', icon: HiOutlineViewGrid, href: '/admin-dashboard' },
+  { name: 'Drivers', icon: HiOutlineUsers, href: '/admin-dashboard/drivers' },
+  { name: 'Availability', icon: HiOutlineCalendar, href: '/admin-dashboard/availability' },
+  { name: 'Manage Employee', icon: HiOutlineUserGroup, href: '/admin-dashboard/employees' },
+  { name: 'Review', icon: HiOutlineStar, href: '/admin-dashboard/reviews' },
+  { name: 'Price', icon: HiOutlineCurrencyDollar, href: '/admin-dashboard/price' },
+  { name: 'Government/Private', icon: HiOutlineBriefcase, href: '/admin-dashboard/type' },
+];
+
+export default function AdminSidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    clearAuthData();
+    router.push('/login');
+  };
+
+  return (
+    <aside className="w-64 h-screen bg-slate-900 text-white flex flex-col fixed left-0 top-0 shadow-xl z-50">
+      <div className="p-6 border-b border-slate-800">
+        <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent italic">
+          EDGE ADMIN
+        </h2>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto py-4">
+        <ul className="space-y-1">
+          {sidebarItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-6 py-3 transition-all duration-200 group ${
+                    isActive 
+                      ? 'bg-orange-500/10 text-orange-400 border-r-4 border-orange-500' 
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                  }`}
+                >
+                  <item.icon className={`text-xl ${isActive ? 'text-orange-400' : 'group-hover:text-white'}`} />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="p-4 border-t border-slate-800">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-6 py-3 w-full text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all rounded-lg"
+        >
+          <HiOutlineLogout className="text-xl" />
+          <span className="font-medium">Logout</span>
+        </button>
+      </div>
+    </aside>
+  );
+}
