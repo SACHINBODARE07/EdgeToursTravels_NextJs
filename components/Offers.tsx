@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function Offers() {
   return (
@@ -47,21 +48,26 @@ export default function Offers() {
           </div>
         </div>
 
-        <div className="relative h-96 rounded-3xl overflow-hidden group cursor-pointer shadow-lg">
+        <Link href="/fleet/sedans/swift-dzire" className="relative h-96 rounded-3xl overflow-hidden group cursor-pointer shadow-lg block">
           <img src="https://www.mercedes-benz.co.in/content/dam/hq/passengercars/cars/s-class/s-class-saloon-long-v223-pi/overview/spa-highlight/02-2025/images/mercedes-benz-s-class-v223-spa-rear-compartment-2400x2400-02-2025.jpg?im=Resize,width=1014" alt="Luxury Prime Sedan Interior Rear Seat" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+          <div className="absolute top-4 left-4 bg-[#EB664E] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Premium Choice</div>
           <div className="absolute bottom-6 left-6 right-6">
             <p className="text-xs font-medium mb-1 text-gray-300">Comfort Priority</p>
             <h3 className="text-xl font-bold text-white mb-3">Prime Sedan Upgrades</h3>
             <div className="flex justify-between items-end text-white border-t border-white/20 pt-3">
-              <p className="text-xs text-gray-300 w-2/3 leading-snug">Experience unmatched legroom and verified air-conditioned comfort on all inter-city Prime Sedan bookings.</p>
+              <div className="w-2/3">
+                 <p className="text-xs text-gray-300 leading-snug mb-2">Experience unmatched legroom and verified comfort on all Swift Dzire bookings.</p>
+                 <span className="inline-block text-[10px] font-black uppercase tracking-[0.2em] text-[#EB664E] group-hover:translate-x-1 transition-transform">View Vehicle →</span>
+              </div>
               <div className="text-right">
                 <p className="text-[10px] uppercase opacity-80 text-gray-300">Status</p>
                 <p className="font-bold text-white">Verified</p>
               </div>
             </div>
           </div>
-        </div>
+        </Link>
+
       </div>
     </section>
   );
