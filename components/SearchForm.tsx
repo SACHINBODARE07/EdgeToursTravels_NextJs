@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { HiMapPin, HiCalendarDays, HiUsers, HiMagnifyingGlass } from 'react-icons/hi2';
 
 const TABS = [
-    { id: 'cabs', label: 'Cabs' },
-    { id: 'luxury-cabs', label: 'Luxury Cabs' },
-    { id: 'suvs', label: 'SUVs' },
-    { id: 'packages', label: 'Packages' }
+    { id: 'cabs', label: 'CABS' },
+    { id: 'luxury-cabs', label: 'LUXURY CABS' },
+    { id: 'suvs', label: 'SUVS' },
+    { id: 'packages', label: 'PACKAGES' }
 ];
 
 export default function SearchForm() {
