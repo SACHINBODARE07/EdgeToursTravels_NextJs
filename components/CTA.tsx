@@ -3,9 +3,8 @@ import React from 'react';
 export default function CTA() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-12">
-      <div className="bg-[#0A1128] rounded-[2rem] p-16 text-center relative overflow-hidden flex flex-col items-center">
-        <div className="absolute right-10 top-10 opacity-20 text-white text-6xl">✦</div>
-        <div className="absolute right-24 top-24 opacity-10 text-white text-4xl">✦</div>
+      <div className="bg-[#00adef] rounded-[2rem] p-16 text-center relative overflow-hidden flex flex-col items-center shadow-xl shadow-blue-500/10">
+
 
         <h2 className="text-4xl font-bold text-white mb-8 relative z-10">
           Ready for your next <br /> Masterpiece Travel?

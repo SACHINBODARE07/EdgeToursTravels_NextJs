@@ -71,7 +71,7 @@ function Hero() {
           </p>
         </div> */}
 
-        <SearchForm />
+        {/* SearchForm removed and moved to Booking Modal in Navbar */}
       </div>
 
 

@@ -2,7 +2,9 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Offers from '@/components/Offers';
-import Features from '@/components/Features';
+import WhatWeOffer from '@/components/WhatWeOffer';
+import TravelGuide from '@/components/TravelGuide';
+import FAQ from '@/components/FAQ';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
 
@@ -12,7 +14,9 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Offers />
-      <Features />
+      <WhatWeOffer />
+      <TravelGuide />
+      <FAQ />
       <CTA />
       <Footer />
     </div>
