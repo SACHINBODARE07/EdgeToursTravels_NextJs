@@ -1,5 +1,7 @@
+
 export interface LoginCredentials {
-  email: string;
+  email?: string;
+  mobileNumber?: string;
   password: string;
 }
 
@@ -8,6 +10,7 @@ export interface RegisterData {
   password: string;
   mobileNumber: string;
   name?: string;
+  role?: 'admin' | 'employee' | 'driver';
 }
 
 export interface AuthResponse {
@@ -16,7 +19,7 @@ export interface AuthResponse {
     email: string;
     mobileNumber: string;
     name?: string;
-    role: 'admin' | 'employee';
+    role: 'admin' | 'employee' | 'driver';
     createdAt: string;
   };
   token: string;

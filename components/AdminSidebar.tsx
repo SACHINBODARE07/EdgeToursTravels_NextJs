@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 
 const adminItems = [
   { name: 'Dashboard', icon: HiOutlineViewGrid, href: '/admin-dashboard' },
-  { name: 'Drivers', icon: HiOutlineUsers, href: '/admin-dashboard/drivers' },
+  // { name: 'Drivers', icon: HiOutlineUsers, href: '/admin-dashboard/drivers' },
   { name: 'Availability', icon: HiOutlineCalendar, href: '/admin-dashboard/availability' },
   { name: 'Manage Employee', icon: HiOutlineUserGroup, href: '/admin-dashboard/employees' },
   { name: 'Review', icon: HiOutlineStar, href: '/admin-dashboard/reviews' },
