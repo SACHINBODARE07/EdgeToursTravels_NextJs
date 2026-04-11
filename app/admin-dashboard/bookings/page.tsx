@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { HiOutlineCalendar, HiOutlineMapPin, HiOutlineUser, HiOutlinePhone, HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineDotsVertical } from 'react-icons/hi2';
+import { HiOutlineCalendar, HiOutlineMapPin, HiOutlineUser, HiOutlinePhone, HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiEllipsisVertical, HiChevronLeft, HiChevronRight, HiChevronDown } from 'react-icons/hi2';
 import apiClient from '@/lib/apiClient';
 
 interface Booking {
@@ -19,6 +19,7 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const fetchBookings = async () => {
     setIsLoading(true);
@@ -36,6 +37,10 @@ export default function BookingsPage() {
   useEffect(() => {
     fetchBookings();
   }, []);
+
+  const filteredBookings = bookings.filter(booking =>
+    statusFilter === 'all' ? true : booking.status === statusFilter
+  );
 
   const updateStatus = async (id: string, newStatus: string) => {
     try {
@@ -59,6 +64,15 @@ export default function BookingsPage() {
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-20">
@@ -68,104 +82,115 @@ export default function BookingsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Ride Bookings</h2>
-          <p className="text-slate-500 text-sm font-medium">Manage and track all customer ride requests</p>
-        </div>
-        <button 
-          onClick={fetchBookings}
-          className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
-        >
-          Refresh Data
-        </button>
-      </div>
+    <div className="-mt-8 -mx-8 animate-in fade-in duration-500">
+      <div className="bg-white border-b border-slate-200 overflow-hidden min-h-[calc(100vh-64px)]">
+        {/* Header Toolbar matched to Employees Page */}
+        <div className="bg-[#f8f9fa] py-2 px-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200">
+          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2 uppercase tracking-tight">
+            Ride Bookings <span className="text-slate-400 font-normal">({filteredBookings.length})</span>
+          </h2>
 
-      {error ? (
-        <div className="bg-red-50 border border-red-100 p-4 rounded-2xl text-red-600 text-sm font-bold flex items-center gap-3">
-          <HiOutlineXCircle className="text-xl" />
-          {error}
-        </div>
-      ) : bookings.length === 0 ? (
-        <div className="bg-white border border-slate-200 p-12 rounded-3xl text-center">
-          <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <HiOutlineCalendar className="text-2xl text-slate-400" />
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button
+              onClick={fetchBookings}
+              className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm whitespace-nowrap"
+            >
+              Refresh Data
+            </button>
           </div>
-          <h3 className="text-lg font-bold text-slate-800">No bookings found</h3>
-          <p className="text-slate-500 text-sm">Ride requests will appear here once customers submit them</p>
         </div>
-      ) : (
-        <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+
+        {error ? (
+          <div className="bg-red-50 border-b border-red-100 p-4 text-red-600 text-sm font-bold flex items-center gap-3">
+            <HiOutlineXCircle className="text-xl" />
+            {error}
+          </div>
+        ) : filteredBookings.length === 0 ? (
+          <div className="bg-white p-24 text-center">
+            <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <HiOutlineCalendar className="text-2xl text-slate-400" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-800">No {statusFilter !== 'all' ? statusFilter : ''} bookings found</h3>
+            <p className="text-slate-500 text-sm">Try changing the status filter or refreshing data</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Route</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Schedule</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                <tr className="bg-white border-b border-slate-200">
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 border-r border-slate-200 uppercase tracking-widest">Customer</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 border-r border-slate-200 uppercase tracking-widest">Route</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 border-r border-slate-200 uppercase tracking-widest">Schedule</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 border-r border-slate-200 uppercase tracking-widest">
+                    <div className="relative inline-flex items-center gap-1 cursor-pointer group hover:text-slate-900 transition-colors">
+                      <span>Status</span>
+                      <HiChevronDown className="text-slate-400 text-xs" />
+                      <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                      >
+                        <option value="all">ALL</option>
+                        <option value="pending">PENDING</option>
+                        <option value="confirmed">CONFIRMED</option>
+                        <option value="completed">COMPLETED</option>
+                        <option value="cancelled">CANCELLED</option>
+                      </select>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 uppercase tracking-widest">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {bookings.map((booking) => (
-                  <tr key={booking._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                {filteredBookings.map((booking) => (
+                  <tr key={booking._id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-1.5 text-sm font-medium text-slate-800 border-r border-slate-200">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold uppercase">
-                          {booking.name.charAt(0)}
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs ring-1 ring-slate-100">
+                          {getInitials(booking.name)}
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">{booking.name}</p>
-                          <div className="flex items-center gap-1 text-xs text-slate-500">
-                            <HiOutlinePhone className="text-slate-400" />
-                            {booking.contact}
-                          </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-800 truncate">{booking.name}</p>
+                          <p className="text-[11px] text-slate-400 font-medium">{booking.contact}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                          <HiOutlineMapPin className="text-orange-500" />
-                          {booking.from}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                          <HiOutlineMapPin className="text-blue-500" />
-                          {booking.destination}
-                        </div>
+                    <td className="px-6 py-1.5 text-sm text-slate-600 border-r border-slate-200">
+                      <div className="space-y-0.5">
+                        <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-tighter truncate">
+                          <span className="w-1.5 h-1.5 rounded-full bg-orange-400"></span> {booking.from}
+                        </p>
+                        <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-tighter truncate">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> {booking.destination}
+                        </p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                        <HiOutlineCalendar className="text-slate-400" />
-                        {new Date(booking.dateTime).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-500 mt-1">
-                        <HiOutlineClock className="text-slate-400" />
-                        {new Date(booking.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
+                    <td className="px-6 py-1.5 text-sm text-slate-600 border-r border-slate-200">
+                      <p className="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5 whitespace-nowrap">
+                        <HiOutlineCalendar className="text-slate-300" /> {new Date(booking.dateTime).toLocaleDateString('en-GB')}
+                      </p>
+                      <p className="text-[11px] font-bold text-slate-400 mt-0.5 flex items-center gap-1.5">
+                        <HiOutlineClock className="text-slate-300" /> {new Date(booking.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      </p>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(booking.status)}`}>
+                    <td className="px-6 py-1.5 border-r border-slate-200 text-center">
+                      <span className={`
+                        px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-widest border inline-block min-w-[90px]
+                        ${booking.status === 'pending' ? 'bg-[#FFFCF0] text-[#EAB308] border-[#FEF08A]' : 
+                          booking.status === 'cancelled' ? 'bg-[#FEF2F2] text-[#EF4444] border-[#FEE2E2]' :
+                          booking.status === 'confirmed' ? 'bg-[#F0F9FF] text-[#0EA5E9] border-[#E0F2FE]' :
+                          'bg-[#F0FDF4] text-[#22C55E] border-[#DCFCE7]'}
+                      `}>
                         {booking.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {booking.status === 'pending' && (
+                    <td className="px-6 py-1.5 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
                           <button 
-                            onClick={() => updateStatus(booking._id, 'confirmed')}
-                            className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-all title='Confirm'"
-                          >
-                            <HiOutlineCheckCircle className="text-lg" />
-                          </button>
-                        )}
-                        {booking.status === 'confirmed' && (
-                          <button 
-                            onClick={() => updateStatus(booking._id, 'completed')}
-                            className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition-all title='Complete'"
+                            onClick={() => updateStatus(booking._id, booking.status === 'pending' ? 'confirmed' : 'completed')}
+                            className="p-1.5 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                            title="Update Status"
                           >
                             <HiOutlineCheckCircle className="text-lg" />
                           </button>
@@ -173,7 +198,8 @@ export default function BookingsPage() {
                         {booking.status !== 'cancelled' && booking.status !== 'completed' && (
                           <button 
                             onClick={() => updateStatus(booking._id, 'cancelled')}
-                            className="bg-white border border-slate-200 text-slate-400 p-2 rounded-lg hover:text-red-500 hover:border-red-200 transition-all title='Cancel'"
+                            className="p-1.5 bg-red-50 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                            title="Cancel Booking"
                           >
                             <HiOutlineXCircle className="text-lg" />
                           </button>
@@ -184,9 +210,33 @@ export default function BookingsPage() {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination Footer - Image Style */}
+            <div className="bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-end gap-8">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-slate-500">Rows per page:</span>
+                <div className="flex items-center gap-1 cursor-pointer">
+                  <span className="text-xs font-bold text-slate-800">100</span>
+                  <HiChevronDown className="text-sm text-slate-400" />
+                </div>
+              </div>
+              
+              <span className="text-xs font-bold text-slate-600">
+                1-{filteredBookings.length} of {filteredBookings.length}
+              </span>
+
+              <div className="flex items-center gap-4">
+                <button className="text-slate-300 cursor-not-allowed">
+                  <HiChevronLeft className="text-xl" />
+                </button>
+                <button className="text-slate-300 cursor-not-allowed">
+                  <HiChevronRight className="text-xl" />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
