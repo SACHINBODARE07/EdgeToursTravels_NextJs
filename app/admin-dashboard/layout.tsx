@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getStoredUser } from '@/lib/auth';
+import { getStoredUser, clearAuthData } from '@/lib/auth';
 import AdminSidebar from '@/components/AdminSidebar';
+import { HiOutlineUser, HiOutlineCog6Tooth, HiOutlinePencilSquare, HiOutlineLockClosed, HiOutlineSun, HiOutlineArrowRightOnRectangle } from 'react-icons/hi2';
 
 export default function AdminLayout({
   children,
@@ -12,6 +13,8 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const user = getStoredUser();
@@ -21,6 +24,21 @@ export default function AdminLayout({
       setIsAuthorized(true);
     }
   }, [router]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    clearAuthData();
+    router.push('/login');
+  };
 
   if (!isAuthorized) {
     return (
@@ -38,11 +56,51 @@ export default function AdminLayout({
           <h1 className="text-xl font-semibold text-slate-800 capitalize">
             Admin Panel
           </h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-500">Welcome, Administrator</span>
-            <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-              A
+
+          <div className="relative" ref={dropdownRef}>
+            <div
+              className="flex items-center gap-4 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-all"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <span className="text-sm text-slate-500">Welcome, Administrator</span>
+              <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold shadow-md shadow-orange-200 ring-2 ring-white">
+                A
+              </div>
             </div>
+
+            {/* Professional Profile Dropdown */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                  <HiOutlineUser className="text-lg text-slate-400" />
+                  <span className="font-medium">About</span>
+                </button>
+                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                  <HiOutlineCog6Tooth className="text-lg text-slate-400" />
+                  <span className="font-medium">Settings</span>
+                </button>
+                {/* <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                  <HiOutlinePencilSquare className="text-lg text-slate-400" />
+                  <span className="font-medium">Edit Menu</span>
+                </button> */}
+                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                  <HiOutlineLockClosed className="text-lg text-slate-400" />
+                  <span className="font-medium">Change Password</span>
+                </button>
+                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                  <HiOutlineSun className="text-lg text-slate-400" />
+                  <span className="font-medium">Dark Mode</span>
+                </button>
+                <div className="h-px bg-slate-100 my-1"></div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <HiOutlineArrowRightOnRectangle className="text-lg" />
+                  <span className="font-bold uppercase tracking-wider text-[11px]">Logout</span>
+                </button>
+              </div>
+            )}
           </div>
         </header>
         <div className="p-8">
