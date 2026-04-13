@@ -8,34 +8,89 @@ import Link from 'next/link';
 export default function AuthPage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
+  const [loginMethod, setLoginMethod] = useState<'email' | 'otp'>('email');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOtp = async () => {
+    if (!mobileNumber) {
+      setError('Mobile number is required');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOtpSent(true);
+        setError('');
+      } else {
+        setError(data.error || 'Failed to send OTP');
+      }
+    } catch (err) {
+      setError('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      let response;
-      if (isLogin) {
-        response = await loginUser({ email, password });
-        storeAuthData(response.token, response.user);
-        if (response.user.role === 'admin') {
-          router.push('/admin-dashboard');
-        } else {
-          router.push('/employee-dashboard');
-        }
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber, otp }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        storeAuthData(data.token, data.user);
+        router.push(data.user.role === 'admin' ? '/admin-dashboard' : '/employee-dashboard');
       } else {
-        response = await registerUser({ email, password, mobileNumber, name });
-        storeAuthData(response.token, response.user);
-        alert('Registration successful! You are now logged in.');
-        router.push('/employee-dashboard');
+        setError(data.error || 'Invalid OTP');
       }
+    } catch (err) {
+      setError('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await loginUser({ email, password });
+      storeAuthData(response.token, response.user);
+      router.push(response.user.role === 'admin' ? '/admin-dashboard' : '/employee-dashboard');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await registerUser({ email, password, mobileNumber, name });
+      storeAuthData(response.token, response.user);
+      router.push('/employee-dashboard');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -44,110 +99,78 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:scale-[1.01]">
-        {/* Logo */}
-        <div className="flex justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+        <div className="flex justify-center mb-6">
           <Link href="/">
-            <img src="/images/logo.png" alt="Edge Tours & Travels" className="h-12 w-auto object-contain cursor-pointer" />
+            <img src="/images/logo.png" alt="Edge Tours" className="h-12 w-auto" />
           </Link>
         </div>
+        <h2 className="text-3xl font-bold text-center text-gray-900">
+          {isLogin ? 'Welcome Back' : 'Create Account'}
+        </h2>
+        {error && <div className="mt-4 p-2 bg-red-50 text-red-700 rounded">{error}</div>}
 
-        <div className="text-center">
-          <h2 className="mt-2 text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            {isLogin ? 'Sign in to your account' : 'Join Edge Tours for exclusive deals'}
-          </p>
-        </div>
-
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-            <p className="text-sm text-red-700">{error}</p>
+        {isLogin && (
+          <div className="mt-4 flex border-b">
+            <button
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 py-2 text-center ${loginMethod === 'email' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500'}`}
+            >
+              Email Login
+            </button>
+            <button
+              onClick={() => setLoginMethod('otp')}
+              className={`flex-1 py-2 text-center ${loginMethod === 'otp' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500'}`}
+            >
+              OTP Login
+            </button>
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {!isLogin && (
-            <>
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="John Doe"
-                />
-              </div>
-              <div>
-                <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">
-                  Mobile Number *
-                </label>
-                <input
-                  id="mobile"
-                  type="tel"
-                  required
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="9876543210"
-                />
-              </div>
-            </>
-          )}
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email Address *
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password *
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="••••••••"
-            />
-            {!isLogin && <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>}
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Create Account'}
+        {isLogin && loginMethod === 'email' && (
+          <form className="mt-6 space-y-4" onSubmit={handleEmailLogin}>
+            <input type="email" placeholder="Email Address" required value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2 border rounded" />
+            <input type="password" placeholder="Password" required value={password} onChange={e => setPassword(e.target.value)} className="w-full p-2 border rounded" />
+            <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 disabled:opacity-50">
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
-          </div>
-        </form>
+          </form>
+        )}
 
-        <div className="text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
-          >
+        {isLogin && loginMethod === 'otp' && (
+          <form className="mt-6 space-y-4" onSubmit={handleOtpLogin}>
+            <input type="tel" placeholder="Mobile Number" required value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} className="w-full p-2 border rounded" />
+            {!otpSent ? (
+              <button type="button" onClick={handleSendOtp} disabled={loading} className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700">
+                {loading ? 'Sending...' : 'Send OTP'}
+              </button>
+            ) : (
+              <>
+                <input type="text" placeholder="Enter OTP" required value={otp} onChange={e => setOtp(e.target.value)} className="w-full p-2 border rounded" />
+                <button type="submit" disabled={loading} className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                  {loading ? 'Verifying...' : 'Verify & Login'}
+                </button>
+              </>
+            )}
+          </form>
+        )}
+
+        {!isLogin && (
+          <form className="mt-6 space-y-4" onSubmit={handleRegister}>
+            <input type="text" placeholder="Full Name" value={name} onChange={e => setName(e.target.value)} className="w-full p-2 border rounded" />
+            <input type="tel" placeholder="Mobile Number *" required value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} className="w-full p-2 border rounded" />
+            <input type="email" placeholder="Email Address *" required value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2 border rounded" />
+            <input type="password" placeholder="Password *" required value={password} onChange={e => setPassword(e.target.value)} className="w-full p-2 border rounded" />
+            <p className="text-xs text-gray-500">Minimum 6 characters</p>
+            <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
+              {loading ? 'Creating...' : 'Create Account'}
+            </button>
+          </form>
+        )}
+
+        <div className="text-center mt-4">
+          <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-indigo-600 hover:underline">
             {isLogin ? "Don't have an account? Register" : 'Already have an account? Sign In'}
           </button>
         </div>
