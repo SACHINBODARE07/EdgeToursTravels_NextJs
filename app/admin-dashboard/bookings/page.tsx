@@ -165,14 +165,6 @@ export default function BookingsPage() {
             <HiOutlineXCircle className="text-xl" />
             {error}
           </div>
-        ) : filteredBookings.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 p-24 text-center transition-colors">
-            <div className="bg-slate-100 dark:bg-slate-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
-              <HiOutlineCalendar className="text-2xl text-slate-400 dark:text-slate-500" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">No {statusFilter !== 'all' ? statusFilter : ''} bookings found</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Try changing the status filter or refreshing data</p>
-          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -184,7 +176,7 @@ export default function BookingsPage() {
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Price Estimate</th>
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">
                     <div className="relative inline-flex items-center gap-1 cursor-pointer group hover:text-slate-900 dark:hover:text-white transition-colors">
-                      <span>Status</span>
+                      <span className="uppercase">{statusFilter === 'all' ? 'Status' : statusFilter}</span>
                       <HiChevronDown className="text-slate-400 text-xs" />
                       <select
                         value={statusFilter}
@@ -203,7 +195,18 @@ export default function BookingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {filteredBookings.map((booking) => (
+                {filteredBookings.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-20 text-center">
+                      <div className="bg-slate-100 dark:bg-slate-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                        <HiOutlineCalendar className="text-2xl text-slate-400 dark:text-slate-500" />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-white italic">No {statusFilter !== 'all' ? statusFilter : ''} bookings found</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm">Try changing the status filter or refreshing data</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredBookings.map((booking) => (
                   <tr key={booking._id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     <td className="px-6 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700">
                       <div className="flex items-center gap-3">
@@ -273,7 +276,8 @@ export default function BookingsPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
 
