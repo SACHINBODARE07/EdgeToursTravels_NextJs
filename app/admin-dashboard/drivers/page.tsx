@@ -313,7 +313,7 @@ export default function DriversPage() {
           type="button"
           onClick={() => document.getElementById(fileInputId)?.click()}
           disabled={uploading}
-          className="px-6 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+          className="px-6 py-2 bg-orange-600 dark:bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 dark:hover:bg-orange-700 transition-colors disabled:opacity-50"
         >
           {uploading ? 'Uploading...' : 'Browse Files'}
         </button>
@@ -482,7 +482,7 @@ export default function DriversPage() {
         {/* Modal – Driver form with card-style document uploads */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={closeModal}>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-200 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} onClick={(e) => e.stopPropagation()}>
               <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-10">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                   {editingDriver ? 'Edit Driver' : 'Add New Driver'}
@@ -496,7 +496,6 @@ export default function DriversPage() {
                 {/* Personal Information */}
                 <div className="space-y-4">
                   <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <span className="w-1.5 h-5 bg-indigo-500 rounded-full"></span>
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -519,7 +518,7 @@ export default function DriversPage() {
                 {/* Document Uploads - Card style */}
                 <div className="space-y-4">
                   <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <span className="w-1.5 h-5 bg-indigo-500 rounded-full"></span>
+                    
                     Document Uploads
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
