@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { getAuthToken } from '@/lib/auth';
-import FileUpload from '@/components/FileUpload';
 import {
   HiPencil, HiTrash, HiPlus, HiSearch, HiX, HiCheck, HiClipboardCopy,
+  HiOutlineCloudUpload,
 } from 'react-icons/hi';
 
 interface Driver {
@@ -14,7 +14,6 @@ interface Driver {
   mobileNumber: string;
   role?: string;
   driverDetails?: {
-    // Basic info
     fullName?: string;
     mobile?: string;
     gender?: string;
@@ -28,26 +27,12 @@ interface Driver {
     drivingLicense?: string;
     yearsOfExperience?: number;
     highestQualification?: string;
-    // Vehicle & bank (already existed)
-    dateOfBirth?: string;
-    drivingLicenseNumber?: string;
-    dlExpiryDate?: string;
-    vehicleRegNumber?: string;
-    vehicleType?: string;
-    vehicleMake?: string;
-    vehicleModel?: string;
-    vehicleYear?: number;
-    accountHolderName?: string;
-    bankName?: string;
-    accountNumber?: string;
-    ifscCode?: string;
-    kycStatus?: string;
-    // Image URLs
     profilePhoto?: string;
     aadharFront?: string;
     aadharBack?: string;
     panImage?: string;
     licenseImage?: string;
+    kycStatus?: string;
   };
 }
 
@@ -60,6 +45,7 @@ export default function DriversPage() {
   const [formData, setFormData] = useState<any>({});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; tempPassword?: string } | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchDrivers();
@@ -78,7 +64,6 @@ export default function DriversPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        // API returns direct array of users; filter drivers
         const usersArray = Array.isArray(data) ? data : data.employees || [];
         const driverList = usersArray.filter((emp: any) => emp.role === 'driver');
         setDrivers(driverList);
@@ -92,16 +77,44 @@ export default function DriversPage() {
     }
   };
 
+  // File upload handler (matches your existing upload API)
+  const uploadFile = async (file: File, folder: string): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    const token = getAuthToken();
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data.url;
+  };
+
+  const handleFileUpload = async (field: string, file: File) => {
+    setUploading(true);
+    try {
+      const url = await uploadFile(file, 'drivers');
+      setFormData({ ...formData, [field]: url });
+      showToast(`${field} uploaded successfully`, 'success');
+    } catch (err) {
+      showToast(`Failed to upload ${field}`, 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCreateDriver = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = getAuthToken();
     const payload = {
       email: formData.email,
       mobileNumber: formData.mobile,
-      name: formData.fullName, // display name
+      name: formData.fullName,
       role: 'driver',
       driverDetails: {
-        // New fields from screenshot
         fullName: formData.fullName,
         mobile: formData.mobile,
         gender: formData.gender,
@@ -115,20 +128,6 @@ export default function DriversPage() {
         drivingLicense: formData.drivingLicense,
         yearsOfExperience: formData.yearsOfExperience ? parseInt(formData.yearsOfExperience) : undefined,
         highestQualification: formData.highestQualification,
-        // Existing vehicle/bank fields (keep for compatibility)
-        dateOfBirth: formData.dob,
-        drivingLicenseNumber: formData.drivingLicense,
-        dlExpiryDate: formData.dlExpiryDate,
-        vehicleRegNumber: formData.vehicleRegNumber,
-        vehicleType: formData.vehicleType,
-        vehicleMake: formData.vehicleMake,
-        vehicleModel: formData.vehicleModel,
-        vehicleYear: formData.vehicleYear ? parseInt(formData.vehicleYear) : undefined,
-        accountHolderName: formData.accountHolderName,
-        bankName: formData.bankName,
-        accountNumber: formData.accountNumber,
-        ifscCode: formData.ifscCode,
-        // Image uploads
         profilePhoto: formData.profilePhoto,
         aadharFront: formData.aadharFront,
         aadharBack: formData.aadharBack,
@@ -161,7 +160,6 @@ export default function DriversPage() {
     const payload = {
       userId: editingDriver?._id,
       driverDetails: {
-        // New fields
         fullName: formData.fullName,
         mobile: formData.mobile,
         gender: formData.gender,
@@ -175,20 +173,6 @@ export default function DriversPage() {
         drivingLicense: formData.drivingLicense,
         yearsOfExperience: formData.yearsOfExperience ? parseInt(formData.yearsOfExperience) : undefined,
         highestQualification: formData.highestQualification,
-        // Existing fields
-        dateOfBirth: formData.dob,
-        drivingLicenseNumber: formData.drivingLicense,
-        dlExpiryDate: formData.dlExpiryDate,
-        vehicleRegNumber: formData.vehicleRegNumber,
-        vehicleType: formData.vehicleType,
-        vehicleMake: formData.vehicleMake,
-        vehicleModel: formData.vehicleModel,
-        vehicleYear: formData.vehicleYear ? parseInt(formData.vehicleYear) : undefined,
-        accountHolderName: formData.accountHolderName,
-        bankName: formData.bankName,
-        accountNumber: formData.accountNumber,
-        ifscCode: formData.ifscCode,
-        // Images
         profilePhoto: formData.profilePhoto,
         aadharFront: formData.aadharFront,
         aadharBack: formData.aadharBack,
@@ -239,7 +223,6 @@ export default function DriversPage() {
   const openCreateModal = () => {
     setEditingDriver(null);
     setFormData({
-      // Basic driver info
       fullName: '',
       mobile: '',
       gender: '',
@@ -253,18 +236,6 @@ export default function DriversPage() {
       drivingLicense: '',
       yearsOfExperience: '',
       highestQualification: '',
-      // Vehicle/bank
-      dlExpiryDate: '',
-      vehicleRegNumber: '',
-      vehicleType: 'car',
-      vehicleMake: '',
-      vehicleModel: '',
-      vehicleYear: '',
-      accountHolderName: '',
-      bankName: '',
-      accountNumber: '',
-      ifscCode: '',
-      // Image URLs
       profilePhoto: '',
       aadharFront: '',
       aadharBack: '',
@@ -291,16 +262,6 @@ export default function DriversPage() {
       drivingLicense: details.drivingLicense || '',
       yearsOfExperience: details.yearsOfExperience?.toString() || '',
       highestQualification: details.highestQualification || '',
-      dlExpiryDate: details.dlExpiryDate ? new Date(details.dlExpiryDate).toISOString().split('T')[0] : '',
-      vehicleRegNumber: details.vehicleRegNumber || '',
-      vehicleType: details.vehicleType || 'car',
-      vehicleMake: details.vehicleMake || '',
-      vehicleModel: details.vehicleModel || '',
-      vehicleYear: details.vehicleYear?.toString() || '',
-      accountHolderName: details.accountHolderName || '',
-      bankName: details.bankName || '',
-      accountNumber: details.accountNumber || '',
-      ifscCode: details.ifscCode || '',
       profilePhoto: details.profilePhoto || '',
       aadharFront: details.aadharFront || '',
       aadharBack: details.aadharBack || '',
@@ -327,6 +288,38 @@ export default function DriversPage() {
     d.mobileNumber?.includes(searchTerm) ||
     d.driverDetails?.drivingLicense?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Helper to render a document upload card
+  const DocumentUploadCard = ({ title, description, field, accept = "image/*" }: { title: string; description: string; field: string; accept?: string }) => {
+    const fileInputId = `upload-${field}`;
+    const existingUrl = formData[field];
+    return (
+      <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 dark:hover:border-orange-500/50 transition-colors">
+        <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform mx-auto">
+          <HiOutlineCloudUpload className="text-3xl text-slate-400 group-hover:text-orange-500 transition-colors" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{title}</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{description}</p>
+        {existingUrl && (
+          <div className="mb-3">
+            <img src={existingUrl} alt={title} className="max-h-24 mx-auto rounded-lg border border-slate-200 dark:border-slate-700" />
+          </div>
+        )}
+        <input type="file" id={fileInputId} accept={accept} className="hidden" onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleFileUpload(field, file);
+        }} />
+        <button
+          type="button"
+          onClick={() => document.getElementById(fileInputId)?.click()}
+          disabled={uploading}
+          className="px-6 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+        >
+          {uploading ? 'Uploading...' : 'Browse Files'}
+        </button>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -361,25 +354,20 @@ export default function DriversPage() {
           </div>
         )}
 
-        <div className="px-6 lg:px-8 space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                Drivers Management
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage driver profiles, KYC, and vehicle details</p>
-            </div>
-            <button
-              onClick={openCreateModal}
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-200 dark:shadow-none transition-all duration-200 hover:scale-105 active:scale-95"
-            >
-              <HiPlus className="text-lg" /> Add Driver
-            </button>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+              Drivers Management
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage driver profiles, KYC, and personal documents</p>
           </div>
-          {/* <button onClick={openCreateModal} className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-200 dark:shadow-none transition-all duration-200 hover:scale-105 active:scale-95">
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-200 dark:shadow-none transition-all duration-200 hover:scale-105 active:scale-95"
+          >
             <HiPlus className="text-lg" /> Add Driver
-          </button> */}
+          </button>
         </div>
 
         {/* Search */}
@@ -403,7 +391,7 @@ export default function DriversPage() {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">License No.</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Vehicle Reg.</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Experience (Yrs)</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">KYC Status</th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -417,14 +405,14 @@ export default function DriversPage() {
                           {driver.name?.[0]?.toUpperCase() || '?'}
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800 dark:text-white transition-colors">{driver.name || '-'}</div>
-                          <div className="text-xs text-slate-400 dark:text-slate-500 transition-colors">{driver.email}</div>
+                          <div className="font-semibold text-slate-800 dark:text-white">{driver.name || '-'}</div>
+                          <div className="text-xs text-slate-400 dark:text-slate-500">{driver.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">{driver.mobileNumber}</td>
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">{driver.driverDetails?.drivingLicense || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{driver.driverDetails?.vehicleRegNumber || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{driver.driverDetails?.yearsOfExperience || '-'}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize transition-colors ${
                         driver.driverDetails?.kycStatus === 'approved' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-800' :
@@ -467,26 +455,15 @@ export default function DriversPage() {
                   <p className="text-sm text-slate-500 dark:text-slate-400">{driver.mobileNumber}</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-slate-400 dark:text-slate-500">
                     <span>License: {driver.driverDetails?.drivingLicense || '-'}</span>
-                    <span>Vehicle: {driver.driverDetails?.vehicleRegNumber || '-'}</span>
+                    <span>Exp: {driver.driverDetails?.yearsOfExperience || '-'} yrs</span>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                  <span className={`inline-block mt-2 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     driver.driverDetails?.kycStatus === 'approved' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
                     driver.driverDetails?.kycStatus === 'rejected' ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' :
                     'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
                   }`}>
                     {driver.driverDetails?.kycStatus || 'pending'}
                   </span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact</label>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors">{driver.mobileNumber}</p>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">License</label>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors truncate">{driver.driverDetails?.drivingLicenseNumber || '-'}</p>
-                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => openEditModal(driver)} className="p-2 text-indigo-500 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg">
@@ -502,7 +479,7 @@ export default function DriversPage() {
           {filteredDrivers.length === 0 && <div className="text-center py-12 text-slate-500">No drivers found</div>}
         </div>
 
-        {/* Modal – Full driver form with all fields from screenshot */}
+        {/* Modal – Driver form with card-style document uploads */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={closeModal}>
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-200" onClick={(e) => e.stopPropagation()}>
@@ -516,7 +493,7 @@ export default function DriversPage() {
               </div>
 
               <form onSubmit={editingDriver ? handleUpdateDriver : handleCreateDriver} className="p-6 space-y-6">
-                {/* Personal Information (from screenshot) */}
+                {/* Personal Information */}
                 <div className="space-y-4">
                   <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <span className="w-1.5 h-5 bg-indigo-500 rounded-full"></span>
@@ -539,38 +516,18 @@ export default function DriversPage() {
                   </div>
                 </div>
 
-                {/* Document Uploads */}
+                {/* Document Uploads - Card style */}
                 <div className="space-y-4">
                   <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <span className="w-1.5 h-5 bg-indigo-500 rounded-full"></span>
                     Document Uploads
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <FileUpload folder="drivers" label="Profile Photo" onUpload={url => setFormData({...formData, profilePhoto: url})} existingUrl={formData.profilePhoto} />
-                    <FileUpload folder="drivers" label="Aadhar Front" onUpload={url => setFormData({...formData, aadharFront: url})} existingUrl={formData.aadharFront} />
-                    <FileUpload folder="drivers" label="Aadhar Back" onUpload={url => setFormData({...formData, aadharBack: url})} existingUrl={formData.aadharBack} />
-                    <FileUpload folder="drivers" label="PAN Image" onUpload={url => setFormData({...formData, panImage: url})} existingUrl={formData.panImage} />
-                    <FileUpload folder="drivers" label="License Image" onUpload={url => setFormData({...formData, licenseImage: url})} existingUrl={formData.licenseImage} />
-                  </div>
-                </div>
-
-                {/* Vehicle & Bank Details (optional, keep for full functionality) */}
-                <div className="space-y-4">
-                  <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <span className="w-1.5 h-5 bg-indigo-500 rounded-full"></span>
-                    Vehicle & Bank Details (Optional)
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">DL Expiry Date</label><input type="date" value={formData.dlExpiryDate} onChange={e => setFormData({...formData, dlExpiryDate: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Vehicle Registration Number</label><input type="text" value={formData.vehicleRegNumber} onChange={e => setFormData({...formData, vehicleRegNumber: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Vehicle Type</label><select value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none"><option value="auto">Auto</option><option value="bike">Bike</option><option value="car">Car</option></select></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Vehicle Make</label><input type="text" value={formData.vehicleMake} onChange={e => setFormData({...formData, vehicleMake: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Vehicle Model</label><input type="text" value={formData.vehicleModel} onChange={e => setFormData({...formData, vehicleModel: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Year of Manufacture</label><input type="number" value={formData.vehicleYear} onChange={e => setFormData({...formData, vehicleYear: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Account Holder Name</label><input type="text" value={formData.accountHolderName} onChange={e => setFormData({...formData, accountHolderName: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Bank Name</label><input type="text" value={formData.bankName} onChange={e => setFormData({...formData, bankName: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Account Number</label><input type="text" value={formData.accountNumber} onChange={e => setFormData({...formData, accountNumber: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium text-slate-700 dark:text-slate-400">IFSC Code</label><input type="text" value={formData.ifscCode} onChange={e => setFormData({...formData, ifscCode: e.target.value})} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentUploadCard title="Profile Photo" description="Upload driver photo" field="profilePhoto" />
+                    <DocumentUploadCard title="Aadhar Card (Front)" description="Clear photo of front side" field="aadharFront" />
+                    <DocumentUploadCard title="Aadhar Card (Back)" description="Clear photo of back side" field="aadharBack" />
+                    <DocumentUploadCard title="PAN Card" description="Upload PAN image" field="panImage" />
+                    <DocumentUploadCard title="Driving License" description="Upload license image" field="licenseImage" />
                   </div>
                 </div>
 

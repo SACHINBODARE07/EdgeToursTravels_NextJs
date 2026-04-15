@@ -15,6 +15,7 @@ import {
   HiOutlineIdentification,
   HiOutlineCog,
   HiOutlineX,
+   HiOutlineTruck,
   HiOutlineDatabase, 
 } from 'react-icons/hi';
 import { clearAuthData, getStoredUser } from '@/lib/auth';
@@ -23,6 +24,7 @@ const adminItems = [
   { name: 'Dashboard', icon: HiOutlineViewGrid, href: '/admin-dashboard' },
   { name: 'Master Data', icon: HiOutlineDatabase, href: '/admin-dashboard/master-data' }, 
   { name: 'Drivers', icon: HiOutlineUsers, href: '/admin-dashboard/drivers' },
+  { name: 'Vehicles', icon: HiOutlineTruck, href: '/admin-dashboard/vehicles' },
   { name: 'Availability', icon: HiOutlineCalendar, href: '/admin-dashboard/availability' },
   { name: 'Manage Employee', icon: HiOutlineUserGroup, href: '/admin-dashboard/employees' },
   { name: 'Review', icon: HiOutlineStar, href: '/admin-dashboard/reviews' },
