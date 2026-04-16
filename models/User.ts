@@ -8,22 +8,21 @@ interface IAddress {
 
 export interface IDriverDetails extends IAddress {
   fullName: string;
-  mobile: string;
-  gender: 'male' | 'female' | 'other';
-  alternateMobile?: string;
-  aadhar: string;
-  dob: Date;
-  pan: string;
-  email: string;
-  drivingLicense: string;
-  yearsOfExperience: number;
-  highestQualification: string;
-  profilePhoto?: string;
-  aadharFront?: string;
-  aadharBack?: string;
-  panImage?: string;
-  licenseImage?: string;
+  dateOfBirth: Date;
+  drivingLicenseNumber: string;
+  dlExpiryDate: Date;
+  vehicleRegNumber: string;
+  vehicleType: 'auto' | 'bike' | 'car';
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleYear?: number;
+  accountHolderName: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
   kycStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
+  kycDocuments?: Record<string, string>;
 }
 
 export interface IEmployeeDetails extends IAddress {
@@ -66,22 +65,21 @@ const AddressSchema = new Schema({
 const DriverDetailsSchema = new Schema<IDriverDetails>({
   ...AddressSchema.obj,
   fullName: { type: String, required: true },
-  mobile: { type: String, required: true },
-  gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-  alternateMobile: String,
-  aadhar: { type: String, required: true, unique: true },
-  dob: { type: Date, required: true },
-  pan: { type: String, required: true, unique: true },
-  email: { type: String, required: true },
-  drivingLicense: { type: String, required: true, unique: true },
-  yearsOfExperience: { type: Number, required: true },
-  highestQualification: { type: String, required: true },
-  profilePhoto: String,
-  aadharFront: String,
-  aadharBack: String,
-  panImage: String,
-  licenseImage: String,
+  dateOfBirth: { type: Date, required: true },
+  drivingLicenseNumber: { type: String, required: true },
+  dlExpiryDate: { type: Date, required: true },
+  vehicleRegNumber: { type: String, required: true },
+  vehicleType: { type: String, enum: ['auto', 'bike', 'car'], required: true },
+  vehicleMake: String,
+  vehicleModel: String,
+  vehicleYear: Number,
+  accountHolderName: { type: String, required: true },
+  bankName: { type: String, required: true },
+  accountNumber: { type: String, required: true },
+  ifscCode: { type: String, required: true },
   kycStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  rejectionReason: String,
+  kycDocuments: { type: Map, of: String },
 });
 
 const EmployeeDetailsSchema = new Schema<IEmployeeDetails>({

@@ -1,5 +1,43 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Features
+
+### Employee Management System
+
+The application includes a comprehensive employee management system with the following features:
+
+#### API Endpoints
+- `GET /api/admin/employees` - Fetch all employees and drivers
+- `POST /api/admin/create-employee` - Create new employees or drivers
+- `PUT /api/admin/update-employee` - Update existing employee/driver information
+- `DELETE /api/admin/delete-employee` - Delete employees/drivers
+- `GET /api/admin/employee/[id]` - Get detailed information about a specific employee/driver
+
+#### Vehicles Management
+- `GET /api/admin/vehicles` - Fetch all vehicles with vendor details
+- `POST /api/admin/vehicles` - Create new vehicle with vendor information
+- `PUT /api/admin/vehicles/[id]` - Update existing vehicle/vendor details
+- `DELETE /api/admin/vehicles/[id]` - Delete vehicle and vendor
+
+#### Drivers Management
+- `GET /api/admin/drivers` - Fetch all drivers
+- `POST /api/admin/drivers` - Create new driver with vehicle and banking details
+- `PUT /api/admin/update-driver` - Update existing driver information
+- `DELETE /api/admin/delete-driver` - Delete driver
+
+#### Frontend Features
+- **Vehicles**: Complete CRUD operations for vehicles and vendors with document uploads
+- **Drivers**: Full driver management with vehicle assignments and KYC tracking
+- **Search & Filter**: Advanced search functionality across all entities
+- **File Uploads**: Secure document upload for licenses, insurance, and KYC
+- **Real-time Updates**: Live data synchronization and status updates
+- **Professional UI**: Modern, responsive interface with dark mode support
+
+#### Data Models
+- **Vehicles**: Cab details, vendor information, documents, and maintenance status
+- **Drivers**: Personal details, vehicle assignments, banking info, and KYC status
+- **Security**: JWT authentication, role-based access, and data validation
+
 ## Getting Started
 
 First, run the development server:

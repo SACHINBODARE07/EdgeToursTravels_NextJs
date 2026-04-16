@@ -1,52 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import connectToDatabase from '@/lib/mongodb';
 import User from '@/models/User';
-import { verifyToken } from '@/lib/jwt';
+import { verifyAdmin, unauthorizedResponse, forbiddenResponse } from '@/lib/admin-auth';
 import bcrypt from 'bcryptjs';
 
 export async function GET(req: NextRequest) {
-  await dbConnect();
-  const token = req.headers.get('authorization')?.split(' ')[1];
-  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const payload = verifyToken(token);
-  if (!payload || payload.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const admin = await verifyAdmin(req);
+  if (!admin) return unauthorizedResponse();
+  if (admin.role !== 'admin') return forbiddenResponse();
 
-  const drivers = await User.find({ role: 'driver' }).select('-password');
+  await connectToDatabase();
+  const drivers = await User.find({ role: 'driver' })
+    .select('-password')
+    .sort({ createdAt: -1 });
+
   return NextResponse.json(drivers);
 }
 
 export async function POST(req: NextRequest) {
-  await dbConnect();
-  const token = req.headers.get('authorization')?.split(' ')[1];
-  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const payload = verifyToken(token);
-  if (!payload || payload.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const admin = await verifyAdmin(req);
+  if (!admin) return unauthorizedResponse();
+  if (admin.role !== 'admin') return forbiddenResponse();
 
+  await connectToDatabase();
   const body = await req.json();
-  const { fullName, mobile, gender, presentAddress, permanentAddress, alternateMobile,
-          aadhar, dob, pan, email, drivingLicense, yearsOfExperience, highestQualification,
-          profilePhoto, aadharFront, aadharBack, panImage, licenseImage } = body;
-
-  // Check existing
-  const existing = await User.findOne({ $or: [{ email }, { mobileNumber: mobile }] });
-  if (existing) return NextResponse.json({ error: 'Email or mobile already exists' }, { status: 400 });
-
-  const hashedPassword = await bcrypt.hash('Driver@123', 10);
-  const driver = await User.create({
+  const {
     email,
-    mobileNumber: mobile,
+    mobileNumber,
+    name,
+    fullName,
+    dateOfBirth,
+    drivingLicenseNumber,
+    dlExpiryDate,
+    vehicleRegNumber,
+    vehicleType,
+    vehicleMake,
+    vehicleModel,
+    vehicleYear,
+    accountHolderName,
+    bankName,
+    accountNumber,
+    ifscCode
+  } = body;
+
+  if (!email || !mobileNumber || !name) {
+    return NextResponse.json({ error: 'Email, mobile number, and name are required' }, { status: 400 });
+  }
+
+  const existing = await User.findOne({ $or: [{ email }, { mobileNumber }] });
+  if (existing) return NextResponse.json({ error: 'Email or mobile number already exists' }, { status: 400 });
+
+  const temporaryPassword = Math.random().toString(36).slice(-8) + 'D1!';
+  const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+  const driverData: any = {
+    email,
+    mobileNumber,
+    name,
     password: hashedPassword,
-    name: fullName,
     role: 'driver',
-    profileCompleted: true,
     driverDetails: {
-      fullName, mobile, gender, presentAddress, permanentAddress, alternateMobile,
-      aadhar, dob: new Date(dob), pan, email, drivingLicense,
-      yearsOfExperience: Number(yearsOfExperience), highestQualification,
-      profilePhoto, aadharFront, aadharBack, panImage, licenseImage,
+      fullName: fullName || name,
+      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+      drivingLicenseNumber,
+      dlExpiryDate: dlExpiryDate ? new Date(dlExpiryDate) : undefined,
+      vehicleRegNumber,
+      vehicleType: vehicleType || 'car',
+      vehicleMake,
+      vehicleModel,
+      vehicleYear: vehicleYear ? parseInt(vehicleYear.toString()) : undefined,
+      accountHolderName,
+      bankName,
+      accountNumber,
+      ifscCode,
       kycStatus: 'pending'
     }
-  });
+  };
 
-  return NextResponse.json(driver, { status: 201 });
+  const driver = await User.create(driverData);
+
+  return NextResponse.json({
+    message: 'Driver created successfully',
+    driverId: driver._id,
+    temporaryPassword
+  }, { status: 201 });
 }
