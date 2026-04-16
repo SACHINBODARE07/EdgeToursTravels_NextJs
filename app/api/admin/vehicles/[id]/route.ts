@@ -15,6 +15,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const vehicle = await Vehicle.findById(id);
   if (!vehicle) return NextResponse.json({ error: 'Vehicle not found' }, { status: 404 });
   
+  // Check for uniqueness conflicts if cab number or license is being updated
+  if (body.cabNumber && body.cabNumber !== vehicle.cabNumber) {
+    const existingCab = await Vehicle.findOne({ cabNumber: body.cabNumber, _id: { $ne: id } });
+    if (existingCab) return NextResponse.json({ error: 'Cab number already exists' }, { status: 400 });
+  }
+  
+  if ((body.licenseNo || body.licenceNumber) && (body.licenseNo || body.licenceNumber) !== vehicle.licenseNo) {
+    const newLicenseNo = body.licenseNo || body.licenceNumber;
+    const existingLicense = await Vehicle.findOne({ licenseNo: newLicenseNo, _id: { $ne: id } });
+    if (existingLicense) return NextResponse.json({ error: 'License number already exists' }, { status: 400 });
+  }
+  
   // Convert dates and year values if present
   if (body.dob) body.dob = new Date(body.dob);
   if (body.vendor?.dob) body.vendor.dob = new Date(body.vendor.dob);
@@ -22,10 +34,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.yearMaking) body.yearMaking = Number(body.yearMaking);
   if (body.yearOfMaking) body.yearOfMaking = Number(body.yearOfMaking);
   
-  Object.assign(vehicle, body);
-  await vehicle.save();
+  // Handle license number alias
+  if (body.licenceNumber && !body.licenseNo) {
+    body.licenseNo = body.licenceNumber;
+  }
   
-  return NextResponse.json(vehicle);
+  try {
+    Object.assign(vehicle, body);
+    await vehicle.save();
+    
+    return NextResponse.json({
+      message: 'Vehicle updated successfully',
+      vehicle
+    });
+  } catch (error) {
+    console.error('Vehicle update error:', error);
+    return NextResponse.json({ error: 'Failed to update vehicle' }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

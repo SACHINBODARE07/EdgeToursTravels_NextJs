@@ -126,11 +126,12 @@ export default function VehiclesPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        showToast('Vehicle/vendor created successfully', 'success');
+        showToast(data.message || 'Vehicle/vendor created successfully', 'success');
         fetchVehicles();
         closeModal();
       } else {
-        showToast(data.error || 'Creation failed', 'error');
+        const errorMessage = data.error || (data.missing ? `Missing: ${Object.values(data.missing).flat().join(', ')}` : 'Creation failed');
+        showToast(errorMessage, 'error');
       }
     } catch (err) {
       showToast('Something went wrong', 'error');
@@ -147,7 +148,7 @@ export default function VehiclesPage() {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-        showToast('Vehicle/vendor updated successfully', 'success');
+        showToast(data.message || 'Vehicle/vendor updated successfully', 'success');
         fetchVehicles();
         closeModal();
       } else {

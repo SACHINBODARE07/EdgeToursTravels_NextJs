@@ -21,25 +21,46 @@ export async function POST(req: NextRequest) {
   await connectToDatabase();
   const body = await req.json();
   
-  // Required fields from frontend
+  // Required fields validation with better error messages
   const requiredVendor = ['vendorName', 'mobile', 'gender', 'address', 'aadhar', 'dob', 'pan', 'email'];
   const requiredVehicle = ['cabNumber', 'licenseNo', 'insuranceNo', 'modelName', 'expiryDate', 'yearOfMaking'];
-  for (const field of requiredVendor) {
-    const value = body.vendor?.[field] ?? body[field];
-    if (!value) return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-  }
-  for (const field of requiredVehicle) {
-    const aliasKey = field === 'licenseNo' ? 'licenceNumber' : field === 'yearOfMaking' ? 'yearMaking' : field;
-    const value = body[field] ?? body[aliasKey];
-    if (!value) return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+  
+  const missingVendor = requiredVendor.filter(field => !body.vendor?.[field] && !body[field]);
+  const missingVehicle = requiredVehicle.filter(field => {
+    const value = body[field] ?? body[field === 'licenseNo' ? 'licenceNumber' : field === 'yearOfMaking' ? 'yearMaking' : field];
+    return !value;
+  });
+  
+  if (missingVendor.length > 0 || missingVehicle.length > 0) {
+    return NextResponse.json({ 
+      error: 'Missing required fields', 
+      missing: { vendor: missingVendor, vehicle: missingVehicle }
+    }, { status: 400 });
   }
   
   const licenseNo = body.licenseNo || body.licenceNumber;
   const tacNo = body.tacNo || body.racNo;
   
-  // Check uniqueness
-  const existing = await Vehicle.findOne({ $or: [{ cabNumber: body.cabNumber }, { licenseNo }] });
-  if (existing) return NextResponse.json({ error: 'Cab number or licence number already exists' }, { status: 400 });
+  // Enhanced uniqueness checks
+  const existingCab = await Vehicle.findOne({ cabNumber: body.cabNumber });
+  if (existingCab) return NextResponse.json({ error: 'Cab number already exists' }, { status: 400 });
+  
+  const existingLicense = await Vehicle.findOne({ licenseNo });
+  if (existingLicense) return NextResponse.json({ error: 'License number already exists' }, { status: 400 });
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const vendorEmail = body.vendor?.email || body.email;
+  if (!emailRegex.test(vendorEmail)) {
+    return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
+  }
+  
+  // Validate mobile number (basic check)
+  const mobileRegex = /^[6-9]\d{9}$/;
+  const vendorMobile = body.vendor?.mobile || body.mobile;
+  if (!mobileRegex.test(vendorMobile)) {
+    return NextResponse.json({ error: 'Invalid mobile number format' }, { status: 400 });
+  }
   
   const vehicleData = {
     cabNumber: body.cabNumber,
@@ -54,13 +75,13 @@ export async function POST(req: NextRequest) {
     status: body.status || 'active',
     vendor: {
       vendorName: body.vendor?.vendorName || body.vendorName,
-      mobile: body.vendor?.mobile || body.mobile,
+      mobile: vendorMobile,
       gender: body.vendor?.gender || body.gender,
       address: body.vendor?.address || body.address,
       aadhar: body.vendor?.aadhar || body.aadhar,
       dob: body.vendor?.dob ? new Date(body.vendor.dob) : new Date(body.dob),
       pan: body.vendor?.pan || body.pan,
-      email: body.vendor?.email || body.email,
+      email: vendorEmail,
       vendorProfilePhoto: body.vendor?.vendorProfilePhoto,
       vendorAadharFront: body.vendor?.vendorAadharFront,
       vendorAadharBack: body.vendor?.vendorAadharBack,
@@ -74,6 +95,14 @@ export async function POST(req: NextRequest) {
     pollutionImage: body.pollutionImage,
   };
   
-  const vehicle = await Vehicle.create(vehicleData);
-  return NextResponse.json(vehicle, { status: 201 });
+  try {
+    const vehicle = await Vehicle.create(vehicleData);
+    return NextResponse.json({
+      message: 'Vehicle and vendor created successfully',
+      vehicle
+    }, { status: 201 });
+  } catch (error) {
+    console.error('Vehicle creation error:', error);
+    return NextResponse.json({ error: 'Failed to create vehicle' }, { status: 500 });
+  }
 }
