@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
     accountHolderName,
     bankName,
     accountNumber,
-    ifscCode
+    ifscCode,
+    kycDocuments
   } = body;
 
   if (!email || !mobileNumber || !name) {
@@ -73,7 +74,8 @@ export async function POST(req: NextRequest) {
       bankName,
       accountNumber,
       ifscCode,
-      kycStatus: 'pending'
+      kycStatus: 'pending',
+      kycDocuments: kycDocuments || {}
     }
   };
 

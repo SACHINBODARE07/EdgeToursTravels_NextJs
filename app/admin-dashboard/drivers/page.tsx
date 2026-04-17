@@ -37,6 +37,7 @@ interface Driver {
     ifscCode?: string;
     kycStatus?: string;
     yearsOfExperience?: number;
+    kycDocuments?: Record<string, string>;
   };
 }
 
@@ -45,6 +46,8 @@ export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [kycFilter, setKycFilter] = useState('all');
+  const [masterDocs, setMasterDocs] = useState<any[]>([]);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
   const [formData, setFormData] = useState<any>({
     fullName: '',
@@ -87,7 +90,20 @@ export default function DriversPage() {
 
   useEffect(() => {
     fetchDrivers();
+    fetchMasterDocs();
   }, []);
+
+  const fetchMasterDocs = async () => {
+    try {
+      const res = await fetch('/api/admin/master-documents?category=driver', {
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) setMasterDocs(data.filter(d => d.isActive));
+    } catch (err) {
+      console.error('Error fetching master docs:', err);
+    }
+  };
 
   const fetchDrivers = async () => {
     setLoading(true);
@@ -128,8 +144,15 @@ export default function DriversPage() {
     setUploading(true);
     try {
       const url = await uploadFile(file, 'drivers');
-      setFormData((prev: any) => ({ ...prev, [field]: url }));
-      setMessage(`${field} uploaded successfully`);
+      setFormData((prev: any) => ({ 
+        ...prev, 
+        [field]: url,
+        kycDocuments: {
+          ...(prev.kycDocuments || {}),
+          [field]: url
+        }
+      }));
+      setMessage(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} uploaded successfully`);
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       setMessage(`Failed to upload ${field}`);
@@ -172,11 +195,15 @@ export default function DriversPage() {
       pan: formData.pan,
       yearsOfExperience: formData.yearsOfExperience,
       highestQualification: formData.highestQualification,
-      profilePhoto: formData.profilePhoto,
-      aadharFront: formData.aadharFront,
-      aadharBack: formData.aadharBack,
-      panImage: formData.panImage,
-      licenseImage: formData.licenseImage,
+      kycDocuments: {
+        ...(editingDriver?.driverDetails?.kycDocuments || {}),
+        ...(formData.kycDocuments || {}),
+        profilePhoto: formData.profilePhoto,
+        aadharFront: formData.aadharFront,
+        aadharBack: formData.aadharBack,
+        panImage: formData.panImage,
+        licenseImage: formData.licenseImage,
+      }
     };
 
     const apiUrl = editingDriver ? '/api/admin/update-driver' : '/api/admin/drivers';
@@ -293,9 +320,9 @@ export default function DriversPage() {
     d.mobileNumber?.includes(searchTerm)
   );
 
-  const DocumentUploadCard = ({ title, description, field, accept = "image/*" }: { title: string; description: string; field: string; accept?: string }) => {
+  const DocumentUploadCard = ({ title, description, field, accept = "image/*", existingUrl }: { title: string; description: string; field: string; accept?: string; existingUrl?: string }) => {
     const fileInputId = `upload-${field}`;
-    const existingUrl = formData[field];
+    const displayUrl = existingUrl || formData[field] || formData.kycDocuments?.[field];
     return (
       <div className="bg-[#f8fafc] dark:bg-slate-800/50 border-2 border-dashed border-[#e2e8f0] dark:border-slate-700 rounded-3xl p-8 text-center group hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 relative overflow-hidden">
         <div className="w-20 h-20 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-md shadow-slate-200/50 dark:shadow-black/20 mb-6 group-hover:scale-110 transition-transform mx-auto border border-slate-50 dark:border-slate-800">
@@ -303,10 +330,10 @@ export default function DriversPage() {
         </div>
         <h3 className="text-lg font-bold text-[#1e293b] dark:text-white mb-1.5 leading-tight">{title}</h3>
         <p className="text-sm text-[#64748b] dark:text-slate-400 mb-6 font-medium">{description}</p>
-        
-        {existingUrl ? (
+
+        {displayUrl ? (
           <div className="mb-4 relative group/img">
-            <img src={existingUrl} alt={title} className="max-h-32 mx-auto rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm transition-all group-hover/img:brightness-75" />
+            <img src={displayUrl} alt={title} className="max-h-32 mx-auto rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm transition-all group-hover/img:brightness-75" />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
               <span className="bg-white/90 dark:bg-slate-800/90 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">Change File</span>
             </div>
@@ -319,7 +346,7 @@ export default function DriversPage() {
           const file = e.target.files?.[0];
           if (file) handleFileUpload(field, file);
         }} />
-        
+
         <div className="flex justify-start">
           <button
             type="button"
@@ -341,24 +368,57 @@ export default function DriversPage() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6 animate-pulse">
-        <div className="flex justify-between items-center">
-          <div className="h-8 w-48 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-          <div className="flex gap-3">
-            <div className="h-10 w-64 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-            <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-          </div>
+      <div className="-mt-8 -mx-8 animate-pulse bg-white dark:bg-slate-800 min-h-screen">
+        <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-4 px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded ml-4"></div>
+          <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded mr-4"></div>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-          <div className="h-96 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900"></div>
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700">
+          <div className="h-10 w-full max-w-md bg-slate-100 dark:bg-slate-700 rounded-lg"></div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                  <th key={i} className="px-6 py-4 border-r border-slate-200 dark:border-slate-700">
+                    <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded mx-auto"></div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
+                <tr key={row} className="border-b border-slate-100 dark:border-slate-800">
+                  <td className="px-6 py-3 border-r border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700"></div>
+                      <div className="h-3 w-24 bg-slate-100 dark:bg-slate-700 rounded"></div>
+                    </div>
+                  </td>
+                  {[1, 2, 3, 4, 5].map((col) => (
+                    <td key={col} className="px-6 py-3 border-r border-slate-200 dark:border-slate-700">
+                      <div className="h-3 w-full bg-slate-50 dark:bg-slate-800 rounded"></div>
+                    </td>
+                  ))}
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center gap-2">
+                      <div className="w-8 h-8 bg-slate-50 dark:bg-slate-800 rounded-lg"></div>
+                      <div className="w-8 h-8 bg-slate-50 dark:bg-slate-800 rounded-lg"></div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 -mt-8 -mx-8 animate-in fade-in duration-500">
-      <div className="p-6 lg:p-8">
+    <div className="-mt-8 -mx-8 animate-in fade-in duration-500">
+      <div className="bg-white dark:bg-slate-800 min-h-screen transition-colors duration-300">
         {/* Messages */}
         {message && (
           <div className={`mb-6 p-4 rounded-xl text-sm flex items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-300 ${message.includes('successfully') ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-800 dark:text-rose-400 border border-rose-100 dark:border-rose-800'
@@ -372,26 +432,25 @@ export default function DriversPage() {
           </div>
         )}
 
-        {/* Header */}
-        <div className="px-6 lg:px-8 mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-              Manage Drivers
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Manage driver profiles, vehicles, and KYC records</p>
+        {/* Header toolbar */}
+        <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-3.5 md:py-2 px-4 md:px-6 flex flex-row items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-4">
+            <h2 className="text-[14px] md:text-xl font-extrabold md:font-bold text-slate-800 dark:text-white uppercase tracking-tighter md:tracking-tight whitespace-nowrap">
+              DRIVERS MANAGEMENT <span className="text-slate-400 dark:text-slate-500 font-normal">({filteredDrivers.length})</span>
+            </h2>
           </div>
           <button
             onClick={() => { resetForm(); setIsModalOpen(true); }}
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-900/40 transition-all duration-200 hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-3 py-1.5 md:px-5 md:py-2 rounded-lg font-bold text-[11px] md:text-sm shadow-sm transition-all duration-200 active:scale-95"
           >
             <HiPlus className="text-lg" /> Add New Driver
           </button>
         </div>
 
-        {/* Main Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-100 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden">
-          {/* Search */}
-          <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
+        {/* Main Content */}
+        <div>
+          {/* Search Area */}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
             <div className="relative max-w-md">
               <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-lg" />
               <input
@@ -405,49 +464,55 @@ export default function DriversPage() {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto border-t border-slate-200 dark:border-slate-700">
+            <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-slate-50/80 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Driver</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">License info</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">KYC Status</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider pr-8 lg:pr-10">Actions</th>
+                <tr className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Driver</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Contact No</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Email</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">License info</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Experience</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">KYC Status</th>
+                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
                 {filteredDrivers.map((driver, idx) => (
-                  <tr key={driver._id} className="group hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors duration-150" style={{ animationDelay: `${idx * 30}ms` }}>
-                    <td className="px-6 py-4">
+                  <tr key={driver._id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-700">
+                    <td className="px-6 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900/50 dark:to-indigo-800/50 text-indigo-700 dark:text-indigo-300 font-bold text-sm flex items-center justify-center shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-xs ring-1 ring-slate-100 dark:ring-slate-600">
                           {getInitials(driver.name)}
                         </div>
-                        <div>
-                          <div className="font-semibold text-slate-800 dark:text-white">{driver.name || '-'}</div>
-                          <div className="text-xs text-slate-400 dark:text-slate-500">{driver.email}</div>
-                        </div>
+                        <div className="font-bold text-slate-800 dark:text-slate-200">{driver.name || '-'}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 font-mono">{driver.mobileNumber}</td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs">
-                        <div className="font-medium text-slate-700 dark:text-slate-200">{driver.driverDetails?.drivingLicenseNumber || '-'}</div>
-                        <div className="text-slate-400 dark:text-slate-500">Exp: {driver.driverDetails?.yearsOfExperience || 0} yrs</div>
-                      </div>
+                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 text-center uppercase tracking-tighter">
+                      {driver.mobileNumber || '-'}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${driver.driverDetails?.kycStatus === 'approved' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200 dark:ring-emerald-800' :
-                        driver.driverDetails?.kycStatus === 'rejected' ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 ring-1 ring-rose-200 dark:ring-rose-800' :
-                          driver.driverDetails?.kycStatus === 'submitted' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-200 dark:ring-indigo-800' :
-                            'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-600'
-                        }`}>
+                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      {driver.email || '-'}
+                    </td>
+                    <td className="px-6 py-1.5 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 text-center font-black uppercase tracking-tighter">
+                      {driver.driverDetails?.drivingLicenseNumber || '-'}
+                    </td>
+                    <td className="px-6 py-1.5 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 text-center font-bold">
+                      {driver.driverDetails?.yearsOfExperience || 0} YRS
+                    </td>
+                    <td className="px-6 py-1.5 border-r border-slate-200 dark:border-slate-700 text-center">
+                      <span className={`
+                        px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-widest border inline-block min-w-[90px]
+                        ${driver.driverDetails?.kycStatus === 'approved' ? 'bg-[#F0FDF4] dark:bg-green-900/20 text-[#22C55E] border-[#DCFCE7] dark:border-green-900/30' :
+                          driver.driverDetails?.kycStatus === 'rejected' ? 'bg-[#FEF2F2] dark:bg-red-900/20 text-[#EF4444] border-[#FEE2E2] dark:border-red-900/30' :
+                            driver.driverDetails?.kycStatus === 'submitted' ? 'bg-[#F0F9FF] dark:bg-blue-900/20 text-[#0EA5E9] border-[#E0F2FE] dark:border-blue-900/30' :
+                              'bg-[#FFFCF0] dark:bg-yellow-900/20 text-[#EAB308] border-[#FEF08A] dark:border-yellow-900/30'}
+                      `}>
                         {driver.driverDetails?.kycStatus || 'pending'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-1.5 text-center">
+                      <div className="flex items-center justify-center gap-2">
                         <button onClick={() => setSelectedUserId(driver._id)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="View Details">
                           <HiOutlineEye className="text-xl" />
                         </button>
@@ -475,8 +540,7 @@ export default function DriversPage() {
             {filteredDrivers.length === 0 && (
               <div className="text-center py-16">
                 <div className="text-slate-300 dark:text-slate-700 text-5xl mb-3">🚗</div>
-                <p className="text-slate-500 dark:text-slate-400 font-medium">No drivers found</p>
-                <p className="text-slate-400 dark:text-slate-600 text-sm mt-1">Try adjusting your search</p>
+                <p className="text-slate-500 dark:text-slate-400 font-medium italic">No drivers found</p>
               </div>
             )}
           </div>
@@ -522,10 +586,10 @@ export default function DriversPage() {
                   Identity & Documents
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Driving License Number <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.drivingLicenseNumber} onChange={e => setFormData({ ...formData, drivingLicenseNumber: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">DL Expiry Date <span className="text-red-500 ml-1">*</span></label><input type="text" placeholder="DD-MM-YYYY" required value={formData.dlExpiryDate} onChange={e => setFormData({ ...formData, dlExpiryDate: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
-                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase">AADHAR NUMBER <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.aadhar} onChange={e => setFormData({ ...formData, aadhar: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">PAN Number</label><input type="text" value={formData.pan} onChange={e => setFormData({ ...formData, pan: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase">Driving License Number <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.drivingLicenseNumber} onChange={e => setFormData({ ...formData, drivingLicenseNumber: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase">DL Expiry Date <span className="text-red-500 ml-1">*</span></label><input type="text" placeholder="DD-MM-YYYY" required value={formData.dlExpiryDate} onChange={e => setFormData({ ...formData, dlExpiryDate: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase">AADHAR NUMBER <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.aadhar} onChange={e => setFormData({ ...formData, aadhar: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                  <div><label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase">PAN Number</label><input type="text" value={formData.pan} onChange={e => setFormData({ ...formData, pan: e.target.value })} className="mt-1 w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
                 </div>
               </div>
 
@@ -549,11 +613,23 @@ export default function DriversPage() {
                   Document Uploads
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <DocumentUploadCard title="Profile Photo" description="Clear face photo" field="profilePhoto" />
-                  <DocumentUploadCard title="Aadhar Card (Front)" description="Front side with photo" field="aadharFront" />
-                  <DocumentUploadCard title="Aadhar Card (Back)" description="Back side with address" field="aadharBack" />
-                  <DocumentUploadCard title="PAN Card" description="Clear PAN card image" field="panImage" />
-                  <DocumentUploadCard title="Driving License" description="Front side of license" field="licenseImage" />
+                  {/* Default/Core Documents */}
+                  <DocumentUploadCard title="Profile Photo" description="Clear face photo" field="profilePhoto" existingUrl={formData.profilePhoto} />
+                  <DocumentUploadCard title="Aadhar Card (Front)" description="Front side with photo" field="aadharFront" existingUrl={formData.aadharFront} />
+                  <DocumentUploadCard title="Aadhar Card (Back)" description="Back side with address" field="aadharBack" existingUrl={formData.aadharBack} />
+                  <DocumentUploadCard title="PAN Card" description="Clear PAN card image" field="panImage" existingUrl={formData.panImage} />
+                  <DocumentUploadCard title="Driving License" description="Front side of license" field="licenseImage" existingUrl={formData.licenseImage} />
+
+                  {/* Dynamic Master Documents (excluding defaults if already configured) */}
+                  {masterDocs.filter(doc => !['profilePhoto', 'aadharFront', 'aadharBack', 'panImage', 'licenseImage'].includes(doc.key)).map((doc) => (
+                    <DocumentUploadCard 
+                      key={doc.key}
+                      title={doc.label} 
+                      description={doc.description} 
+                      field={doc.key} 
+                      existingUrl={formData[doc.key] || formData.kycDocuments?.[doc.key]}
+                    />
+                  ))}
                 </div>
               </div>
 

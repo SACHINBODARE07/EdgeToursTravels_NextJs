@@ -1,9 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { usePathname } from "next/navigation";
 
 const WhatsAppWidget = () => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const { user } = useAuth();
+  const pathname = usePathname();
 
   useEffect(() => {
     // Show tooltip after 3 seconds
@@ -13,6 +17,13 @@ const WhatsAppWidget = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Hide only on dashboard routes for admin and employee roles
+  const isDashboard = pathname.startsWith('/admin-dashboard') || pathname.startsWith('/employee-dashboard');
+  
+  if (isDashboard && (user?.role === 'admin' || user?.role === 'employee')) {
+    return null;
+  }
 
   const phoneNumber = "917631758838"; // Updated with user's phone number
   const message = "Hello Edge Tours & Travels! I'm interested in your services.";

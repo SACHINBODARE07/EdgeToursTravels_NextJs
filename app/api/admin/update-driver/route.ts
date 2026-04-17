@@ -27,7 +27,8 @@ export async function PUT(req: NextRequest) {
     accountHolderName,
     bankName,
     accountNumber,
-    ifscCode
+    ifscCode,
+    kycDocuments
   } = body;
 
   if (!driverId) {
@@ -70,7 +71,8 @@ export async function PUT(req: NextRequest) {
     bankName: bankName || driver.driverDetails?.bankName,
     accountNumber: accountNumber || driver.driverDetails?.accountNumber,
     ifscCode: ifscCode || driver.driverDetails?.ifscCode,
-    kycStatus: driver.driverDetails?.kycStatus || 'pending'
+    kycStatus: driver.driverDetails?.kycStatus || 'pending',
+    kycDocuments: kycDocuments || driver.driverDetails?.kycDocuments || {}
   };
 
   driver.driverDetails = driverDetails;
