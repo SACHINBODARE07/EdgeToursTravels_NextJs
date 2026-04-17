@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
     rcImage: body.rcImage,
     insuranceImage: body.insuranceImage,
     pollutionImage: body.pollutionImage,
+    kycDocuments: body.kycDocuments || {}
   };
   
   try {

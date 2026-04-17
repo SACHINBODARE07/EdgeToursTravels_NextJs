@@ -27,6 +27,7 @@ export interface IVehicle extends mongoose.Document {
   yearOfMaking: number;
   status: 'active' | 'inactive' | 'maintenance';
   vendor: IVendor;
+  kycDocuments?: Record<string, string>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +59,7 @@ const VehicleSchema = new Schema<IVehicle>({
   yearOfMaking: { type: Number, required: true },
   status: { type: String, enum: ['active', 'inactive', 'maintenance'], default: 'active' },
   vendor: { type: VendorSchema, required: true },
+  kycDocuments: { type: Map, of: String },
 }, { timestamps: true });
 
 export default mongoose.models.Vehicle || mongoose.model<IVehicle>('Vehicle', VehicleSchema);

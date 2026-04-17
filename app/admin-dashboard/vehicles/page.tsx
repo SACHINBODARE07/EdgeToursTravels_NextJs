@@ -43,6 +43,7 @@ interface Vehicle {
   rcImage?: string;
   insuranceImage?: string;
   pollutionImage?: string;
+  kycDocuments?: Record<string, string>;
 }
 
 type VehicleFormData = Partial<Omit<Vehicle, 'vendor'>> & {
@@ -84,12 +85,27 @@ export default function VehiclesPage() {
     rcImage: '',
     insuranceImage: '',
     pollutionImage: '',
+    kycDocuments: {}
   });
+  const [masterDocs, setMasterDocs] = useState<any[]>([]);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     fetchVehicles();
+    fetchMasterDocs();
   }, []);
+
+  const fetchMasterDocs = async () => {
+    try {
+      const res = await fetch('/api/admin/master-documents?category=vehicle', {
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) setMasterDocs(data.filter(d => d.isActive));
+    } catch (err) {
+      console.error('Error fetching master docs:', err);
+    }
+  };
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -499,6 +515,27 @@ export default function VehiclesPage() {
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">PUC document</p>
                       <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, pollutionImage: url })} existingUrl={formData.pollutionImage} />
                     </div>
+
+                    {/* Dynamic Master Documents */}
+                    {masterDocs.filter(doc => !['rcImage', 'insuranceImage', 'pollutionImage'].includes(doc.key)).map((doc) => (
+                      <div key={doc.key} className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
+                        <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform mx-auto">
+                          <HiOutlineCloudUpload className="text-3xl text-slate-400 group-hover:text-orange-500" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{doc.label}</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{doc.description || 'Upload document'}</p>
+                        <FileUpload 
+                          folder="vehicles" 
+                          label="Upload" 
+                          buttonClassName="bg-orange-600 hover:bg-orange-700 font-bold uppercase text-[10px]"
+                          onUpload={(url) => setFormData(prev => ({ 
+                            ...prev, 
+                            kycDocuments: { ...(prev.kycDocuments || {}), [doc.key]: url } 
+                          }))} 
+                          existingUrl={formData.kycDocuments?.[doc.key]} 
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
 
