@@ -4,27 +4,39 @@ import Link from 'next/link';
 
 export default function MasterDataPage() {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2 uppercase tracking-tight">Master Data Management</h1>
-        <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium italic">These modules have been moved to dedicated management sections for a better professional experience.</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { title: 'Drivers', path: '/admin-dashboard/drivers', desc: 'Secure profile management and KYC' },
-            { title: 'Vehicles', path: '/admin-dashboard/vehicles', desc: 'Detailed fleet registration and tracking' },
-            { title: 'Employees', path: '/admin-dashboard/employees', desc: 'Administrative staff and access control' },
-            { title: 'Documents', path: '/admin-dashboard/master-data/documents', desc: 'Manage dynamic document upload requirements' }
-          ].map((item) => (
-            <Link 
-              key={item.title} 
-              href={item.path}
-              className="group p-6 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all hover:shadow-md active:scale-95"
-            >
-              <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-tight md:text-sm lg:text-lg">{item.title}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{item.desc}</p>
-            </Link>
-          ))}
+    <div className="-m-4 sm:-m-8">
+      <div className="bg-white dark:bg-[#0A1128] min-h-[calc(100vh-64px)] border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-3.5 px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center sticky top-0 z-10">
+          <h1 className="text-sm md:text-xl font-extrabold text-slate-800 dark:text-white uppercase tracking-tighter">
+            Master Data Management
+          </h1>
+        </div>
+
+        <div className="p-2 md:p-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { title: 'Drivers', path: '/admin-dashboard/drivers', desc: 'Secure profile management & KYC for all on-boarded drivers.', icon: '🚘' },
+              { title: 'Vehicles', path: '/admin-dashboard/vehicles', desc: 'Detailed fleet registration, maintenance, & location tracking.', icon: '🚕' },
+              { title: 'Employees', path: '/admin-dashboard/employees', desc: 'Administrative staff management and permission controls.', icon: '👥' },
+              { title: 'Documents', path: '/admin-dashboard/master-data/documents', desc: 'Manage global & dynamic document upload requirements.', icon: '📄' }
+            ].map((item) => (
+              <Link
+                key={item.title}
+                href={item.path}
+                className="group p-8 bg-white dark:bg-slate-900/50 rounded-3xl border-2 border-slate-100 dark:border-slate-800 hover:border-orange-500 dark:hover:border-orange-500 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.15)] transition-all hover:-translate-y-2 flex flex-col items-center text-center outline-none ring-offset-2 focus:ring-2 focus:ring-orange-500"
+              >
+                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm group-hover:bg-orange-500 group-hover:scale-110 transition-all duration-300">
+                  {item.icon}
+                </div>
+                <h3 className="font-black text-xl text-slate-800 dark:text-white mb-3 group-hover:text-orange-600 transition-colors uppercase tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+                  {item.desc}
+                </p>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
