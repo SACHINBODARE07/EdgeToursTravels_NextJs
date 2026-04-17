@@ -17,6 +17,8 @@ import {
   HiOutlineX,
   HiOutlineTruck,
   HiOutlineDatabase,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
 } from "react-icons/hi";
 import { clearAuthData, getStoredUser } from "@/lib/auth";
 
@@ -71,9 +73,11 @@ const employeeItems = [
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  isCollapsed: boolean;
+  setIsCollapsed: (v: boolean) => void;
 }
 
-export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
+export default function AdminSidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [items, setItems] = React.useState(adminItems);
@@ -104,21 +108,28 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside
         className={`
-        fixed left-0 top-0 h-screen w-64 bg-white dark:bg-[#0A1128] text-slate-600 dark:text-white 
+        fixed left-0 top-0 h-screen bg-white dark:bg-[#0A1128] text-slate-600 dark:text-white 
         flex flex-col shadow-xl z-50 transition-all duration-300 border-r border-slate-200 dark:border-slate-800
+        ${isCollapsed ? "w-20" : "w-64"}
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}
       >
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800/50 flex items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center justify-center p-2 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-              <img
-                src="/images/logo.png"
-                alt="Edge Tours & Travels"
-                className="h-10 w-auto object-contain cursor-pointer transition-transform hover:scale-110"
-              />
+        <div className={`h-16 px-6 border-b border-slate-100 dark:border-slate-800/50 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          {!isCollapsed ? (
+            <Link href="/">
+              <div className="flex items-center justify-center p-2 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                <img
+                  src="/images/logo.png"
+                  alt="Edge Tours & Travels"
+                  className="h-10 w-auto object-contain cursor-pointer transition-transform hover:scale-110"
+                />
+              </div>
+            </Link>
+          ) : (
+            <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-200/50">
+              <HiOutlineViewGrid className="text-white text-xl" />
             </div>
-          </Link>
+          )}
           <button
             onClick={onClose}
             className="lg:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
@@ -135,21 +146,45 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    onClick={() => {
+                    onClick={(e) => {
                       if (window.innerWidth < 1024) onClose();
+                      if (isCollapsed && item.name === "Dashboard") {
+                        setIsCollapsed(false);
+                        e.preventDefault();
+                      }
                     }}
-                    className={`flex items-center gap-3 px-6 py-3 transition-all duration-200 group ${
-                      isActive
+                    className={`flex items-center gap-4 px-6 py-3.5 transition-all duration-200 group relative ${isActive
                         ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-r-4 border-orange-500"
                         : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
-                    }`}
+                      }`}
                   >
                     <item.icon
-                      className={`text-xl ${isActive ? "text-orange-600 dark:text-orange-400" : "group-hover:text-slate-900 dark:group-hover:text-white"}`}
+                      className={`text-2xl shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-orange-600 dark:text-orange-400" : "group-hover:text-slate-900 dark:group-hover:text-white"}`}
                     />
-                    <span className="font-semibold text-sm tracking-tight">
-                      {item.name}
-                    </span>
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between w-full">
+                        <span className="font-bold text-[13px] tracking-tight whitespace-nowrap overflow-hidden">
+                          {item.name}
+                        </span>
+                        {item.name === "Dashboard" && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setIsCollapsed(true);
+                            }}
+                            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-md transition-all active:scale-95"
+                          >
+                            <HiOutlineChevronLeft className="text-slate-400 hover:text-orange-500" />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {isCollapsed && (
+                      <div className="absolute left-16 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-1 group-hover:translate-x-0 z-50 whitespace-nowrap shadow-xl">
+                        {item.name}
+                      </div>
+                    )}
                   </Link>
                 </li>
               );

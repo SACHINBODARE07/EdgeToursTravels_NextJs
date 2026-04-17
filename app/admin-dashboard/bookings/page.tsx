@@ -291,19 +291,19 @@ export default function BookingsPage() {
                         </div>
                       </td>
                       {/* Date */}
-                      <td className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <HiOutlineCalendar className="text-slate-300 dark:text-slate-600" />
-                          {new Date(booking.dateTime).toLocaleDateString('en-GB')}
+                      <td className="px-4 py-2 text-sm text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <HiOutlineCalendar className="text-orange-500 dark:text-orange-400 text-[16px]" />
+                          <span className="font-medium">{new Date(booking.dateTime).toLocaleDateString('en-GB')}</span>
                         </div>
                       </td>
                       {/* Time */}
-                     <td className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 whitespace-nowrap">
-  <div className="flex items-center gap-1.5">
-    <HiOutlineClock className="text-slate-300 dark:text-slate-600" />
-    {new Date(booking.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-  </div>
-</td>
+                      <td className="px-4 py-2 text-sm text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-700 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <HiOutlineClock className="text-blue-500 dark:text-blue-400 text-[16px]" />
+                          <span className="font-medium">{new Date(booking.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                        </div>
+                      </td>
                       {/* Price */}
                       <td className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 text-center">
                         <p className="text-[11px] font-black text-[#EB664E] uppercase tracking-wider">

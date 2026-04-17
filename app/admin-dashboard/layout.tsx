@@ -26,6 +26,7 @@ export default function AdminLayout({
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -66,12 +67,14 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0A1128] flex transition-colors duration-300">
-      <AdminSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+      <AdminSidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
       />
-
-      <main className="flex-1 lg:ml-64 min-h-screen w-full transition-all duration-300">
+      
+      <main className={`flex-1 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'} min-h-screen w-full transition-all duration-300`}>
         <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 transition-colors duration-300">
           <div className="flex items-center gap-4">
             <button
