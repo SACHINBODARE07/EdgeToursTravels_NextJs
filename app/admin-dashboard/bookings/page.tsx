@@ -76,63 +76,46 @@ export default function BookingsPage() {
 
   if (isLoading) {
     return (
-      <div className="-mt-8 -mx-8 animate-pulse">
-        <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 min-h-screen">
-          {/* Header Skeleton */}
-          <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-4 px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded ml-4"></div>
-            <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded mr-4"></div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-700">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                    <th key={i} className="px-6 py-4">
-                      <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded mx-auto"></div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
-                  <tr key={row}>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700"></div>
-                        <div className="space-y-2">
-                          <div className="h-3 w-24 bg-slate-100 dark:bg-slate-700 rounded"></div>
-                          <div className="h-2 w-16 bg-slate-100 dark:bg-slate-700 rounded"></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center"><div className="h-3 w-20 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div></td>
-                    <td className="px-6 py-4 text-center"><div className="h-3 w-20 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div></td>
-                    <td className="px-6 py-4 text-center"><div className="h-3 w-20 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div></td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-2">
-                        <div className="h-2.5 w-24 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div>
-                        <div className="h-2.5 w-16 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="h-3 w-20 bg-slate-50 dark:bg-slate-700/50 rounded mx-auto"></div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="h-6 w-24 bg-slate-50 dark:bg-slate-700/50 rounded-full mx-auto"></div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex justify-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700/50"></div>
-                        <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-700/50"></div>
-                      </div>
-                    </td>
-                  </tr>
+      <div className="-mt-8 -mx-8 animate-pulse bg-white dark:bg-slate-800 min-h-screen">
+        <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-4 px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded ml-4"></div>
+          <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded mr-4"></div>
+        </div>
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700">
+          <div className="h-10 w-full max-w-md bg-slate-100 dark:bg-slate-700 rounded-lg"></div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <th key={i} className="px-6 py-4 border-r border-slate-200 dark:border-slate-700">
+                    <div className="h-4 w-24 bg-slate-100 dark:bg-slate-700 rounded mx-auto"></div>
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((row) => (
+                <tr key={row} className="border-b border-slate-100 dark:border-slate-800">
+                  <td className="px-6 py-3 border-r border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700"></div>
+                      <div className="h-3 w-24 bg-slate-100 dark:bg-slate-700 rounded"></div>
+                    </div>
+                  </td>
+                  {[1, 2, 3, 4, 5, 6].map((col) => (
+                    <td key={col} className="px-6 py-3 border-r border-slate-200 dark:border-slate-700">
+                      <div className="h-3 w-full bg-slate-50 dark:bg-slate-800 rounded"></div>
+                    </td>
+                  ))}
+                  <td className="px-6 py-3">
+                    <div className="h-3 w-full bg-slate-50 dark:bg-slate-800 rounded"></div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -169,8 +152,8 @@ export default function BookingsPage() {
                 <tr className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Customer</th>
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Contact</th>
-                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Pick-up</th>
-                  <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Drop-off</th>
+                  <th className="px-6 py-4 text-left text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Pick-up</th>
+                  <th className="px-6 py-4 text-left text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Drop-off</th>
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Schedule</th>
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">Price Estimate</th>
                   <th className="px-6 py-4 text-center text-[13px] font-black text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-widest">
@@ -220,10 +203,10 @@ export default function BookingsPage() {
                     <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 text-center">
                       {booking.contact}
                     </td>
-                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-tighter text-center">
+                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-tighter text-left">
                       {booking.from}
                     </td>
-                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-tighter text-center">
+                    <td className="px-6 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 uppercase tracking-tighter text-left">
                       {booking.destination}
                     </td>
                     <td className="px-6 py-1.5 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">
