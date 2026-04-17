@@ -147,12 +147,12 @@ export default function VehiclesPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(formData),
       });
+      const data = await res.json();
       if (res.ok) {
         showToast(data.message || 'Vehicle/vendor updated successfully', 'success');
         fetchVehicles();
         closeModal();
       } else {
-        const data = await res.json();
         showToast(data.error || 'Update failed', 'error');
       }
     } catch (err) {
@@ -228,9 +228,8 @@ export default function VehiclesPage() {
       <div className="p-6 lg:p-8 space-y-6">
         {/* Toast */}
         {toast && (
-          <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg ${
-            toast.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-800'
-          }`}>
+          <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg ${toast.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-800'
+            }`}>
             {toast.type === 'success' ? <HiCheck className="w-5 h-5" /> : <HiX className="w-5 h-5" />}
             <span className="text-sm font-medium">{toast.message}</span>
           </div>
@@ -289,9 +288,8 @@ export default function VehiclesPage() {
                     <td className="px-6 py-4 text-sm font-mono text-slate-600 dark:text-slate-400">{vehicle.cabNumber}</td>
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{vehicle.modelName} ({vehicle.yearOfMaking})</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        vehicle.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
-                      }`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${vehicle.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
+                        }`}>
                         {vehicle.status}
                       </span>
                     </td>
@@ -300,7 +298,7 @@ export default function VehiclesPage() {
                         <button onClick={() => openEditModal(vehicle)} className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all">
                           <HiPencil className="w-5 h-5" />
                         </button>
-                                            <button onClick={() => handleDelete(vehicle._id, vehicle.vendor?.vendorName || '')} className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-all">
+                        <button onClick={() => handleDelete(vehicle._id, vehicle.vendor?.vendorName || '')} className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-all">
                           <HiTrash className="w-5 h-5" />
                         </button>
                       </div>
@@ -319,7 +317,7 @@ export default function VehiclesPage() {
         {/* Modal Form */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={closeModal}>
-            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto subtle-scrollbar" style={{ borderRadius: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
               <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
                 <h2 className="text-xl font-bold">
                   {editingVehicle ? 'Edit Vendor & Cab' : 'Add New Vendor & Cab'}
@@ -336,14 +334,14 @@ export default function VehiclesPage() {
                     Vendor Information
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div><label className="block text-sm font-medium">Vendor Name *</label><input type="text" required value={formData.vendor?.vendorName || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), vendorName: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Mobile *</label><input type="tel" required value={formData.vendor?.mobile || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), mobile: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Gender *</label><select required value={formData.vendor?.gender || 'male'} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), gender: e.target.value as 'male' | 'female' | 'other'}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
-                    <div><label className="block text-sm font-medium">Address *</label><input type="text" required value={formData.vendor?.address || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), address: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Aadhar Number *</label><input type="text" required value={formData.vendor?.aadhar || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), aadhar: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Date of Birth *</label><input type="date" required value={formData.vendor?.dob?.split('T')[0] || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), dob: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">PAN Number *</label><input type="text" required value={formData.vendor?.pan || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), pan: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Email *</label><input type="email" required value={formData.vendor?.email || ''} onChange={e => setFormData(prev => ({...prev, vendor: {...(prev.vendor ?? defaultVendorValues), email: e.target.value}}))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Vendor Name <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.vendor?.vendorName || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), vendorName: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Mobile <span className="text-red-500 ml-1">*</span></label><input type="tel" required value={formData.vendor?.mobile || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), mobile: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Gender <span className="text-red-500 ml-1">*</span></label><select required value={formData.vendor?.gender || 'male'} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), gender: e.target.value as 'male' | 'female' | 'other' } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                    <div><label className="block text-sm font-medium">Address <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.vendor?.address || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), address: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">AADHAR NUMBER <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.vendor?.aadhar || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), aadhar: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Date of Birth <span className="text-red-500 ml-1">*</span></label><input type="text" placeholder="DD-MM-YYYY" required value={formData.vendor?.dob || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), dob: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                    <div><label className="block text-sm font-medium">PAN Number <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.vendor?.pan || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), pan: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Email</label><input type="email" required value={formData.vendor?.email || ''} onChange={e => setFormData(prev => ({ ...prev, vendor: { ...(prev.vendor ?? defaultVendorValues), email: e.target.value } }))} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
                   </div>
                 </div>
 
@@ -353,16 +351,16 @@ export default function VehiclesPage() {
                     Cab Details
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div><label className="block text-sm font-medium">Cab Number *</label><input type="text" required value={formData.cabNumber || ''} onChange={e => setFormData({...formData, cabNumber: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">RAC No.</label><input type="text" value={formData.tacNo || ''} onChange={e => setFormData({...formData, tacNo: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Licence Number *</label><input type="text" required value={formData.licenseNo || ''} onChange={e => setFormData({...formData, licenseNo: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Pollution No.</label><input type="text" value={formData.pollutionNo || ''} onChange={e => setFormData({...formData, pollutionNo: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">GST No.</label><input type="text" value={formData.gstNo || ''} onChange={e => setFormData({...formData, gstNo: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Insurance No. *</label><input type="text" required value={formData.insuranceNo || ''} onChange={e => setFormData({...formData, insuranceNo: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Model Name *</label><input type="text" required value={formData.modelName || ''} onChange={e => setFormData({...formData, modelName: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Expiry Date (Insurance/PUC) *</label><input type="date" required value={formData.expiryDate?.split('T')[0] || ''} onChange={e => setFormData({...formData, expiryDate: e.target.value})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Year of Making *</label><input type="number" required value={formData.yearOfMaking || ''} onChange={e => setFormData({...formData, yearOfMaking: parseInt(e.target.value)})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
-                    <div><label className="block text-sm font-medium">Status *</label><select required value={formData.status || 'active'} onChange={e => setFormData({...formData, status: e.target.value as 'active' | 'inactive' | 'maintenance'})} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none"><option value="active">Active</option><option value="inactive">Inactive</option><option value="maintenance">Maintenance</option></select></div>
+                    <div><label className="block text-sm font-medium">Cab Number <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.cabNumber || ''} onChange={e => setFormData({ ...formData, cabNumber: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">RAC No.</label><input type="text" value={formData.tacNo || ''} onChange={e => setFormData({ ...formData, tacNo: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Licence Number <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.licenseNo || ''} onChange={e => setFormData({ ...formData, licenseNo: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Pollution No.</label><input type="text" value={formData.pollutionNo || ''} onChange={e => setFormData({ ...formData, pollutionNo: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">GST No.</label><input type="text" value={formData.gstNo || ''} onChange={e => setFormData({ ...formData, gstNo: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Insurance No. <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.insuranceNo || ''} onChange={e => setFormData({ ...formData, insuranceNo: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Model Name <span className="text-red-500 ml-1">*</span></label><input type="text" required value={formData.modelName || ''} onChange={e => setFormData({ ...formData, modelName: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Expiry Date (Insurance/PUC) <span className="text-red-500 ml-1">*</span></label><input type="text" placeholder="DD-MM-YYYY" required value={formData.expiryDate || ''} onChange={e => setFormData({ ...formData, expiryDate: e.target.value })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none uppercase" /></div>
+                    <div><label className="block text-sm font-medium">Year of Making <span className="text-red-500 ml-1">*</span></label><input type="number" required value={formData.yearOfMaking || ''} onChange={e => setFormData({ ...formData, yearOfMaking: parseInt(e.target.value) })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none" /></div>
+                    <div><label className="block text-sm font-medium">Status <span className="text-red-500 ml-1">*</span></label><select required value={formData.status || 'active'} onChange={e => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' | 'maintenance' })} className="mt-1 w-full border dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 outline-none"><option value="active">Active</option><option value="inactive">Inactive</option><option value="maintenance">Maintenance</option></select></div>
                   </div>
                 </div>
 
@@ -379,7 +377,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Aadhar Card (Front)</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Upload clear photo</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, aadharFront: url})} existingUrl={formData.aadharFront} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, aadharFront: url })} existingUrl={formData.aadharFront} />
                     </div>
                     {/* Aadhar Back */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
@@ -388,7 +386,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Aadhar Card (Back)</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Upload clear photo</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, aadharBack: url})} existingUrl={formData.aadharBack} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, aadharBack: url })} existingUrl={formData.aadharBack} />
                     </div>
                     {/* PAN Card */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
@@ -397,7 +395,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">PAN Card</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Upload PAN image</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, panImage: url})} existingUrl={formData.panImage} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, panImage: url })} existingUrl={formData.panImage} />
                     </div>
                     {/* RC Document */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
@@ -406,7 +404,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">RC Document</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Registration Certificate</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, rcImage: url})} existingUrl={formData.rcImage} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, rcImage: url })} existingUrl={formData.rcImage} />
                     </div>
                     {/* Insurance Document */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
@@ -415,7 +413,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Insurance Certificate</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Valid insurance document</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, insuranceImage: url})} existingUrl={formData.insuranceImage} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, insuranceImage: url })} existingUrl={formData.insuranceImage} />
                     </div>
                     {/* Pollution Certificate */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center group hover:border-orange-200 transition-colors">
@@ -424,7 +422,7 @@ export default function VehiclesPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Pollution Certificate</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">PUC document</p>
-                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({...formData, pollutionImage: url})} existingUrl={formData.pollutionImage} />
+                      <FileUpload folder="vehicles" label="Upload" buttonClassName="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700" onUpload={(url) => setFormData({ ...formData, pollutionImage: url })} existingUrl={formData.pollutionImage} />
                     </div>
                   </div>
                 </div>
