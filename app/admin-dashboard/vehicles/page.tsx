@@ -1,17 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getAuthToken } from '@/lib/auth';
-import FileUpload from '@/components/FileUpload';
+import { useEffect, useState } from "react";
+import { getAuthToken } from "@/lib/auth";
+import FileUpload from "@/components/FileUpload";
 import {
-  HiPencil, HiTrash, HiPlus, HiSearch, HiX, HiCheck,
-} from 'react-icons/hi';
-import { HiOutlineCloudUpload } from 'react-icons/hi'; // for document cards
+  HiPencil,
+  HiTrash,
+  HiPlus,
+  HiSearch,
+  HiX,
+  HiCheck,
+} from "react-icons/hi";
+import { HiOutlineCloudUpload } from "react-icons/hi"; // for document cards
 
 interface VehicleVendor {
   vendorName: string;
   mobile: string;
-  gender: 'male' | 'female' | 'other';
+  gender: "male" | "female" | "other";
   address: string;
   aadhar: string;
   dob: string;
@@ -34,7 +39,7 @@ interface Vehicle {
   modelName: string;
   expiryDate: string;
   yearOfMaking: number;
-  status: 'active' | 'inactive' | 'maintenance';
+  status: "active" | "inactive" | "maintenance";
   vendor: VehicleVendor;
   // Document URLs
   aadharFront?: string;
@@ -46,37 +51,37 @@ interface Vehicle {
   kycDocuments?: Record<string, string>;
 }
 
-type VehicleFormData = Partial<Omit<Vehicle, 'vendor'>> & {
+type VehicleFormData = Partial<Omit<Vehicle, "vendor">> & {
   vendor?: Partial<VehicleVendor>;
 };
 
 const defaultVendorValues: VehicleVendor = {
-  vendorName: '',
-  mobile: '',
-  gender: 'male',
-  address: '',
-  aadhar: '',
-  dob: '',
-  pan: '',
-  email: '',
+  vendorName: "",
+  mobile: "",
+  gender: "male",
+  address: "",
+  aadhar: "",
+  dob: "",
+  pan: "",
+  email: "",
 };
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [formData, setFormData] = useState<VehicleFormData>({
     vendor: { ...defaultVendorValues },
-    cabNumber: '',
-    tacNo: '',
-    licenseNo: '',
-    pollutionNo: '',
-    gstNo: '',
-    insuranceNo: '',
-    modelName: '',
-    expiryDate: '',
+    cabNumber: "",
+    tacNo: "",
+    licenseNo: "",
+    pollutionNo: "",
+    gstNo: "",
+    insuranceNo: "",
+    modelName: "",
+    expiryDate: "",
     yearOfMaking: new Date().getFullYear(),
     status: 'active',
     aadharFront: '',
@@ -115,17 +120,17 @@ export default function VehiclesPage() {
   const fetchVehicles = async () => {
     try {
       const token = getAuthToken();
-      const res = await fetch('/api/admin/vehicles', {
+      const res = await fetch("/api/admin/vehicles", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
         setVehicles(Array.isArray(data) ? data : []);
       } else {
-        showToast(data.error || 'Failed to fetch vehicles', 'error');
+        showToast(data.error || "Failed to fetch vehicles", "error");
       }
     } catch (error) {
-      showToast('Error fetching vehicles', 'error');
+      showToast("Error fetching vehicles", "error");
     } finally {
       setLoading(false);
     }
@@ -135,22 +140,32 @@ export default function VehiclesPage() {
     e.preventDefault();
     const token = getAuthToken();
     try {
-      const res = await fetch('/api/admin/vehicles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      const res = await fetch("/api/admin/vehicles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (res.ok) {
-        showToast(data.message || 'Vehicle/vendor created successfully', 'success');
+        showToast(
+          data.message || "Vehicle/vendor created successfully",
+          "success",
+        );
         fetchVehicles();
         closeModal();
       } else {
-        const errorMessage = data.error || (data.missing ? `Missing: ${Object.values(data.missing).flat().join(', ')}` : 'Creation failed');
-        showToast(errorMessage, 'error');
+        const errorMessage =
+          data.error ||
+          (data.missing
+            ? `Missing: ${Object.values(data.missing).flat().join(", ")}`
+            : "Creation failed");
+        showToast(errorMessage, "error");
       }
     } catch (err) {
-      showToast('Something went wrong', 'error');
+      showToast("Something went wrong", "error");
     }
   };
 
@@ -159,20 +174,26 @@ export default function VehiclesPage() {
     const token = getAuthToken();
     try {
       const res = await fetch(`/api/admin/vehicles/${editingVehicle?._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (res.ok) {
-        showToast(data.message || 'Vehicle/vendor updated successfully', 'success');
+        showToast(
+          data.message || "Vehicle/vendor updated successfully",
+          "success",
+        );
         fetchVehicles();
         closeModal();
       } else {
         showToast(data.error || 'Update failed', 'error');
       }
     } catch (err) {
-      showToast('Something went wrong', 'error');
+      showToast("Something went wrong", "error");
     }
   };
 
@@ -181,18 +202,18 @@ export default function VehiclesPage() {
     const token = getAuthToken();
     try {
       const res = await fetch(`/api/admin/vehicles/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        showToast('Deleted successfully', 'success');
+        showToast("Deleted successfully", "success");
         fetchVehicles();
       } else {
         const data = await res.json();
-        showToast(data.error || 'Delete failed', 'error');
+        showToast(data.error || "Delete failed", "error");
       }
     } catch (err) {
-      showToast('Delete failed', 'error');
+      showToast("Delete failed", "error");
     }
   };
 
@@ -200,10 +221,31 @@ export default function VehiclesPage() {
     setEditingVehicle(null);
     setFormData({
       vendor: {
-        vendorName: '', mobile: '', gender: 'male', address: '', aadhar: '', dob: '', pan: '', email: '',
+        vendorName: "",
+        mobile: "",
+        gender: "male",
+        address: "",
+        aadhar: "",
+        dob: "",
+        pan: "",
+        email: "",
       },
-      cabNumber: '', tacNo: '', licenseNo: '', pollutionNo: '', gstNo: '', insuranceNo: '', modelName: '', expiryDate: '', yearOfMaking: new Date().getFullYear(),
-      status: 'active', aadharFront: '', aadharBack: '', panImage: '', rcImage: '', insuranceImage: '', pollutionImage: '',
+      cabNumber: "",
+      tacNo: "",
+      licenseNo: "",
+      pollutionNo: "",
+      gstNo: "",
+      insuranceNo: "",
+      modelName: "",
+      expiryDate: "",
+      yearOfMaking: new Date().getFullYear(),
+      status: "active",
+      aadharFront: "",
+      aadharBack: "",
+      panImage: "",
+      rcImage: "",
+      insuranceImage: "",
+      pollutionImage: "",
     });
     setIsModalOpen(true);
   };
@@ -219,10 +261,11 @@ export default function VehiclesPage() {
     setEditingVehicle(null);
   };
 
-  const filteredVehicles = vehicles.filter(v =>
-    v.vendor?.vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.vendor?.mobile?.includes(searchTerm) ||
-    v.cabNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVehicles = vehicles.filter(
+    (v) =>
+      v.vendor?.vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.vendor?.mobile?.includes(searchTerm) ||
+      v.cabNumber?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const getInitials = (name: string) => {
@@ -411,14 +454,22 @@ export default function VehiclesPage() {
             <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto subtle-scrollbar" style={{ borderRadius: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
               <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
                 <h2 className="text-xl font-bold">
-                  {editingVehicle ? 'Edit Vendor & Cab' : 'Add New Vendor & Cab'}
+                  {editingVehicle
+                    ? "Edit Vendor & Cab"
+                    : "Add New Vendor & Cab"}
                 </h2>
-                <button onClick={closeModal} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <button
+                  onClick={closeModal}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                >
                   <HiX className="text-2xl" />
                 </button>
               </div>
 
-              <form onSubmit={editingVehicle ? handleUpdate : handleCreate} className="p-6 space-y-6">
+              <form
+                onSubmit={editingVehicle ? handleUpdate : handleCreate}
+                className="p-6 space-y-6"
+              >
                 {/* Vendor Information */}
                 <div className="space-y-4">
                   <h3 className="text-md font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -540,9 +591,18 @@ export default function VehiclesPage() {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <button type="button" onClick={closeModal} className="px-6 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50">Cancel</button>
-                  <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all">
-                    {editingVehicle ? 'Update' : 'Create'}
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-6 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all"
+                  >
+                    {editingVehicle ? "Update" : "Create"}
                   </button>
                 </div>
               </form>
@@ -553,3 +613,4 @@ export default function VehiclesPage() {
     </div>
   );
 }
+
