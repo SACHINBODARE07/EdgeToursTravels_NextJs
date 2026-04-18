@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 // Re-using the address interface logic for consistency
 interface IAddress {
   presentAddress: string;
-  permanentAddress: string;
+  dropOffAddress: string;
 }
 
 export interface ICustomer extends mongoose.Document, IAddress {
@@ -39,7 +39,7 @@ export interface ICustomer extends mongoose.Document, IAddress {
 
 const AddressSchema = new Schema({
   presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
+  dropOffAddress: { type: String, required: true },
 });
 
 const CustomerSchema = new Schema<ICustomer>(
