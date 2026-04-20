@@ -246,7 +246,7 @@ export default function BookingsPage() {
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 overflow-hidden min-h-[calc(100vh-64px)] transition-colors duration-300">
         {/* Header Toolbar */}
         <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-3.5 md:py-2 px-4 md:px-6 flex flex-row items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700">
-          <h2 className="text-[14px] md:text-xl font-extrabold md:font-bold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight whitespace-nowrap">
+          <h2 className="text-[14px] md:text-xl font-extrabold md:font-bold text-emerald-600 flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight whitespace-nowrap">
             RIDE BOOKINGS <span className="text-slate-400 dark:text-slate-500 font-normal">({filteredBookings.length})</span>
           </h2>
           <div className="flex items-center gap-2">
