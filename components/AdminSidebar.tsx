@@ -39,7 +39,7 @@ const adminItems = [
 
 // Driver menu items
 const driverItems = [
- { name: "My Trips", icon: HiOutlineTruck, href: "/driver-dashboard/my-trips" },
+//  { name: "My Trips", icon: HiOutlineTruck, href: "/driver-dashboard/my-trips" },
   { name: "KYC", icon: HiOutlineIdentification, href: "/driver-dashboard/kyc" },
   { name: "Profile", icon: HiOutlineUser, href: "/driver-dashboard/profile" },
   { name: "Settings", icon: HiOutlineCog, href: "/driver-dashboard/settings" },
