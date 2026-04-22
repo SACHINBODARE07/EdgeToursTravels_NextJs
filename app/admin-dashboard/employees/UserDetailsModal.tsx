@@ -107,7 +107,7 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }: Props) {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm pt-10" onClick={onClose}>
         <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl p-8 m-4 text-center shadow-2xl">
           <div className="animate-pulse flex flex-col items-center gap-3">
             <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full"></div>
@@ -129,8 +129,8 @@ export default function UserDetailsModal({ userId, onClose, onUpdate }: Props) {
   const isKycFinalised = kycStatus === 'approved' || kycStatus === 'rejected';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-5 duration-200" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm p-4 pt-10" onClick={onClose}>
+      <div className="bg-white dark:bg-slate-900 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-5 duration-200" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-3 z-10">
           <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
