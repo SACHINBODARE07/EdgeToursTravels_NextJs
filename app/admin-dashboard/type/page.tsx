@@ -44,6 +44,7 @@ export default function CustomersPage() {
   const [creating, setCreating] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isSameAsPresent, setIsSameAsPresent] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -62,6 +63,15 @@ export default function CustomersPage() {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  useEffect(() => {
+    if (isSameAsPresent) {
+      setFormData((prev) => ({
+        ...prev,
+        dropOffAddress: prev.presentAddress,
+      }));
+    }
+  }, [formData.presentAddress, isSameAsPresent]);
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -201,6 +211,10 @@ export default function CustomersPage() {
       dateOfBirth: "", // Typically not returned in list for privacy
     });
     setIsModalOpen(true);
+    setIsSameAsPresent(
+      customer.presentAddress === customer.dropOffAddress &&
+      !!customer.presentAddress,
+    );
   };
 
   const resetForm = () => {
@@ -217,6 +231,7 @@ export default function CustomersPage() {
       dateOfBirth: "",
     });
     setEditingCustomer(null);
+    setIsSameAsPresent(false);
   };
 
   const filtered = customers.filter(
@@ -431,9 +446,9 @@ export default function CustomersPage() {
 
       {/* Modal / Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-10 overflow-y-auto subtle-scrollbar" onClick={() => setIsModalOpen(false)}>
-          <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-4xl animate-in slide-in-from-top-10 duration-200" style={{ borderRadius: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-20">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-24 overflow-y-auto subtle-scrollbar" onClick={() => setIsModalOpen(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-[0.5rem] shadow-2xl w-full max-w-4xl animate-in slide-in-from-top-10 duration-200 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-20 rounded-t-[0.5rem]">
               <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                 {editingCustomer
                   ? "Edit Customer Profile"
@@ -605,22 +620,35 @@ export default function CustomersPage() {
                       <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase">
                         Drop-off Address
                       </label>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            dropOffAddress: formData.presentAddress,
-                          })
-                        }
-                        className="text-[10px] text-indigo-600 font-black hover:underline uppercase tracking-tighter"
-                      >
-                        Same as Present
-                      </button>
+                      <div className="flex items-center gap-2 cursor-pointer group transition-all">
+                        <input
+                          type="checkbox"
+                          id="sameAsPresent"
+                          className="w-4 h-4 rounded text-indigo-600 cursor-pointer"
+                          checked={isSameAsPresent}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setIsSameAsPresent(checked);
+                            if (!checked) {
+                              setFormData((prev) => ({
+                                ...prev,
+                                dropOffAddress: "",
+                              }));
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor="sameAsPresent"
+                          className="text-xs font-bold text-indigo-900 dark:text-indigo-300 cursor-pointer leading-tight uppercase select-none"
+                        >
+                          Same as Present
+                        </label>
+                      </div>
                     </div>
                     <textarea
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white outline-none h-24 resize-none focus:ring-2 focus:ring-indigo-200"
+                      readOnly={isSameAsPresent}
+                      className={`w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white outline-none h-24 resize-none transition-all duration-200 focus:ring-2 focus:ring-indigo-200 ${isSameAsPresent ? "opacity-60 bg-slate-50/80 dark:bg-slate-800/40 cursor-not-allowed border-dashed" : ""}`}
                       value={formData.dropOffAddress}
                       onChange={(e) =>
                         setFormData({
@@ -667,7 +695,7 @@ export default function CustomersPage() {
       {/* Delete Confirmation Dialog */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-10 overflow-y-auto subtle-scrollbar" onClick={() => setIsDeleteModalOpen(false)}>
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md shadow-2xl p-8 animate-in zoom-in-95 duration-200" style={{ borderRadius: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-lg shadow-2xl p-8 animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col items-center text-center space-y-4">
               {/* Warning Icon */}
               <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400">

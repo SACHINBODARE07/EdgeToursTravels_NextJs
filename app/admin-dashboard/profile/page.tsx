@@ -75,11 +75,11 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 p-4 md:p-12">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen bg-white dark:bg-slate-950 -mt-4 sm:-mt-8 -mx-4 sm:-mx-8 transition-colors duration-300">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 p-2 md:p-4">
         {/* LEFT COLUMN: User Summary Card */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 text-center">
             <div className="relative inline-block">
               <div className="w-32 h-32 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-3xl flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 mx-auto transform ">
                 <span className="-rotate-3">{user.name?.charAt(0) || "U"}</span>
@@ -102,11 +102,10 @@ export default function ProfilePage() {
                 {user.role}
               </span>
               <span
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest ${
-                  user.kycStatus === "approved"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-amber-100 text-amber-700"
-                }`}
+                className={`px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest ${user.kycStatus === "approved"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-amber-100 text-amber-700"
+                  }`}
               >
                 KYC: {user.kycStatus || "N/A"}
               </span>
@@ -119,7 +118,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Activity Stats Section */}
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm border border-slate-100 dark:border-slate-800">
             <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
               Quick Stats
             </h4>
@@ -196,7 +195,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Full-Width Verification Section */}
-          <section className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-100 dark:border-slate-800">
+          <section className="bg-white dark:bg-slate-900 rounded-lg p-8 shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-8">
               <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800 dark:text-white">
                 <HiShieldCheck className="text-indigo-500 text-2xl" /> Identity
@@ -258,17 +257,9 @@ export default function ProfilePage() {
 }
 
 // Sub-components for cleaner code
-function SectionWrapper({
-  title,
-  icon,
-  children,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function SectionWrapper({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+    <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm border border-slate-100 dark:border-slate-800">
       <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider mb-6">
         <span className="text-indigo-500 text-lg">{icon}</span> {title}
       </h3>
