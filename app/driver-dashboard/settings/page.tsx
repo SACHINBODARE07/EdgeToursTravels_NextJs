@@ -3,7 +3,7 @@
 import React from 'react';
 import { HiOutlineLockClosed, HiOutlineBell, HiOutlineDeviceMobile } from 'react-icons/hi';
 
-export default function SettingsPage() {
+function SettingsPage() {
   return (
     <div className="-mt-4 sm:-mt-8 -mx-4 sm:-mx-8 animate-in fade-in duration-500">
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 min-h-[calc(100vh-64px)] transition-colors duration-300">
@@ -80,3 +80,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+export default SettingsPage;

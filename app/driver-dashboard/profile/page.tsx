@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { getAuthToken, getStoredUser } from '@/lib/auth';
 
-export default function ProfilePage() {
+function ProfilePage() {
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -67,17 +67,29 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="-mt-4 sm:-mt-8 -mx-4 sm:-mx-8 animate-pulse">
-        <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 min-h-screen">
-          <div className="bg-[#f8f9fa] dark:bg-slate-800/50 h-[56px] border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30"></div>
+        <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 min-h-[calc(100vh-64px)]">
+          {/* Header Toolbar Skeleton */}
+          <div className="bg-[#f8f9fa] dark:bg-slate-800/50 h-[56px] border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30 flex items-center justify-between px-6">
+            <div className="h-6 w-32 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+          </div>
+
           <div className="p-0">
-            <div className="bg-slate-50 dark:bg-slate-800/50 h-10 border-b border-slate-200 dark:border-slate-700"></div>
-            <div className="p-8 flex flex-col md:flex-row gap-8 items-start">
-              <div className="w-32 h-32 rounded-full bg-slate-100 dark:bg-slate-800"></div>
+            {/* Section Header Skeleton */}
+            <div className="bg-slate-50 dark:bg-slate-800/50 h-11 border-b border-slate-200 dark:border-slate-700 flex items-center px-6">
+              <div className="h-4 w-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            </div>
+            
+            <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start">
+              {/* Avatar Skeleton */}
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-inner flex-shrink-0"></div>
+              
+              {/* Form Fields Skeleton */}
               <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="h-3 w-24 bg-slate-100 dark:bg-slate-800 rounded"></div>
-                    <div className="h-6 w-full max-w-xs bg-slate-50 dark:bg-slate-800/50 rounded"></div>
+                  <div key={i} className="space-y-3">
+                    <div className="h-2 w-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                    <div className="h-6 w-full max-w-xs bg-slate-100 dark:bg-slate-800/50 rounded"></div>
                   </div>
                 ))}
               </div>
@@ -88,13 +100,14 @@ export default function ProfilePage() {
     );
   }
 
+
   return (
     <div className="-mt-4 sm:-mt-8 -mx-4 sm:-mx-8 animate-in fade-in duration-500">
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 min-h-[calc(100vh-64px)] transition-colors duration-300">
         {/* Header Toolbar */}
         <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-2.5 md:py-2 px-4 md:px-6 flex flex-row items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 min-h-[56px] sticky top-16 z-30 backdrop-blur-md">
           <div className="min-w-0">
-            <h2 className="text-[13px] md:text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight truncate">
+            <h2 className="text-[13px] md:text-xl font-extrabold text-emerald-600 flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight truncate">
               My Profile
             </h2>
           </div>
@@ -102,7 +115,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
               <button
                 onClick={() => setEditing(true)}
-                className="bg-orange-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-md font-bold text-[10px] md:text-sm hover:bg-orange-600 transition-all shadow-sm whitespace-nowrap active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                className="bg-blue-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-md font-bold text-[10px] md:text-sm hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap active:scale-95 flex items-center gap-1.5 cursor-pointer"
               >
                 Edit Profile
               </button>
@@ -173,12 +186,11 @@ export default function ProfilePage() {
                       <div className="space-y-1">
                         <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">KYC Status</label>
                         <div>
-                          <span className={`px-2.5 py-1 rounded text-[10px] font-black border uppercase tracking-wider ${
-                            profile.kycStatus === 'approved' ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800' :
-                            profile.kycStatus === 'rejected' ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-800' :
-                            profile.kycStatus === 'submitted' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
-                            'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800'
-                          }`}>
+                          <span className={`px-2.5 py-1 rounded text-[10px] font-black border uppercase tracking-wider ${profile.kycStatus === 'approved' ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800' :
+                              profile.kycStatus === 'rejected' ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-800' :
+                                profile.kycStatus === 'submitted' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
+                                  'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800'
+                            }`}>
                             {profile.kycStatus || 'pending'}
                           </span>
                         </div>
@@ -194,3 +206,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+export default ProfilePage;

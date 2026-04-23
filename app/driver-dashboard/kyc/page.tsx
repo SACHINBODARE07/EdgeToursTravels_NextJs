@@ -35,7 +35,7 @@ function getMissingFields<T extends Record<string, any>>(obj: T, requiredKeys: (
   return requiredKeys.filter(key => !obj[key]);
 }
 
-export default function KycPage() {
+function KycPage() {
   const [driverDetails, setDriverDetails] = useState<DriverDetails>({
     fullName: '',
     dateOfBirth: '',
@@ -186,7 +186,7 @@ export default function KycPage() {
         {/* Header Toolbar - Styled like Bookings Page */}
         <div className="bg-[#f8f9fa] dark:bg-slate-800/50 py-2.5 md:py-2 px-4 md:px-6 flex flex-row items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 min-h-[56px] sticky top-16 z-30 backdrop-blur-md">
           <div className="min-w-0">
-            <h2 className="text-[13px] md:text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight truncate">
+            <h2 className="text-[13px] md:text-xl font-extrabold text-emerald-600 flex items-center gap-1 md:gap-2 uppercase tracking-tighter md:tracking-tight truncate">
               KYC & Driver Profile
             </h2>
           </div>
@@ -510,3 +510,4 @@ export default function KycPage() {
     </div>
   );
 }
+export default KycPage;
