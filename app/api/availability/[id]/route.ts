@@ -1,67 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Availability from '@/models/Availability';
+import { verifyToken } from '@/lib/jwt';
 
-// GET a single availability event by ID
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const payload = verifyToken(token);
+  if (!payload) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+
   await connectToDatabase();
   const { id } = await params;
-
-  try {
-    const event = await Availability.findById(id);
-    if (!event) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
-    }
-    return NextResponse.json(event);
-  } catch (error) {
-    console.error('GET availability error:', error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  const event = await Availability.findById(id);
+  if (!event) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
   }
+  return NextResponse.json(event);
 }
 
-// UPDATE an availability event by ID
 export async function PUT(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const payload = verifyToken(token);
+  if (!payload) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  if (payload.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   await connectToDatabase();
   const { id } = await params;
-  const body = await request.json();
-
-  try {
-    const updatedEvent = await Availability.findByIdAndUpdate(id, body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!updatedEvent) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
-    }
-    return NextResponse.json(updatedEvent);
-  } catch (error) {
-    console.error('PUT availability error:', error);
-    return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+  const body = await req.json();
+  const updated = await Availability.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+  if (!updated) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
   }
+  return NextResponse.json(updated);
 }
 
-// DELETE an availability event by ID
 export async function DELETE(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const payload = verifyToken(token);
+  if (!payload) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  if (payload.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   await connectToDatabase();
   const { id } = await params;
-
-  try {
-    const deletedEvent = await Availability.findByIdAndDelete(id);
-    if (!deletedEvent) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
-    }
-    return NextResponse.json({ message: 'Deleted successfully' });
-  } catch (error) {
-    console.error('DELETE availability error:', error);
-    return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+  const deleted = await Availability.findByIdAndDelete(id);
+  if (!deleted) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
   }
+  return NextResponse.json({ message: 'Deleted successfully' });
 }
