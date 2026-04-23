@@ -595,38 +595,38 @@ export default function DriversPage() {
                         ${driver.driverDetails?.kycStatus === 'approved' ? 'bg-[#F0FDF4] dark:bg-green-900/20 text-[#22C55E] border-[#DCFCE7] dark:border-green-900/30' :
                           driver.driverDetails?.kycStatus === 'rejected' ? 'bg-[#FEF2F2] dark:bg-red-900/20 text-[#EF4444] border-[#FEE2E2] dark:border-red-900/30' :
                             driver.driverDetails?.kycStatus === 'submitted' ? 'bg-[#F0F9FF] dark:bg-blue-900/20 text-[#0EA5E9] border-[#E0F2FE] dark:border-blue-900/30' :
-                            'bg-[#FFFCF0] dark:bg-yellow-900/20 text-[#EAB308] border-[#FEF08A] dark:border-yellow-900/30'}
+                              'bg-[#FFFCF0] dark:bg-yellow-900/20 text-[#EAB308] border-[#FEF08A] dark:border-yellow-900/30'}
                         `}>
-                          {driver.driverDetails?.kycStatus || 'pending'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-1.5 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => setKycModalDriver(driver)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="View & Review KYC">
-                            <HiDocumentText className="text-xl" />
-                          </button>
-                          <button onClick={() => setSelectedUserId(driver._id)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="View Details">
-                            <HiOutlineEye className="text-xl" />
-                          </button>
-                          <button onClick={() => openEditModal(driver)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="Edit Driver">
-                            <HiPencil className="text-xl" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteDriver(driver._id)}
-                            disabled={deletingUserId === driver._id}
-                            className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all duration-200 group-hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Delete Driver"
-                          >
-                            {deletingUserId === driver._id ? (
-                              <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                            ) : (
-                              <HiTrash className="text-xl" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        {driver.driverDetails?.kycStatus || 'pending'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-1.5 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={() => setKycModalDriver(driver)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="View & Review KYC">
+                          <HiDocumentText className="text-xl" />
+                        </button>
+                        <button onClick={() => setSelectedUserId(driver._id)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="View Details">
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                        <button onClick={() => openEditModal(driver)} className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all duration-200 group-hover:scale-105" title="Edit Driver">
+                          <HiPencil className="text-xl" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteDriver(driver._id)}
+                          disabled={deletingUserId === driver._id}
+                          className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all duration-200 group-hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Delete Driver"
+                        >
+                          {deletingUserId === driver._id ? (
+                            <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <HiTrash className="text-xl" />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
             {filteredDrivers.filter(d => kycFilter === 'all' || d.driverDetails?.kycStatus === kycFilter).length === 0 && (
@@ -645,7 +645,7 @@ export default function DriversPage() {
 
       {/* KYC Review Modal */}
       {kycModalDriver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setKycModalDriver(null)}>
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm p-4 pt-10" onClick={() => setKycModalDriver(null)}>
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-bold text-slate-800 dark:text-white">
@@ -671,7 +671,7 @@ export default function DriversPage() {
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Uploaded Documents</h3>
                 {renderKycDocuments(kycModalDriver)}
               </div>
-{/* 
+              {/* 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Rejection Reason (if rejecting)</label>
                 <textarea
@@ -723,7 +723,7 @@ export default function DriversPage() {
 
       {/* Add/Edit Driver Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setIsModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm p-4 pt-10" onClick={() => setIsModalOpen(false)}>
           <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-200 subtle-scrollbar" style={{ borderRadius: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-20">
               <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">

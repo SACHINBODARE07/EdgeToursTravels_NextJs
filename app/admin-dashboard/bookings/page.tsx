@@ -479,29 +479,29 @@ export default function BookingsPage() {
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 p-4 pt-10 overflow-y-auto subtle-scrollbar" onClick={() => setAssignModal({ isOpen: false, bookingId: null })}>
           <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-md shadow-xl" style={{ borderRadius: '0.5rem' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b dark:border-slate-700">
-              <h3 className="text-base font-bold text-gray-800 dark:text-white">Assign Driver & Vehicle</h3>
-              <button onClick={() => setAssignModal({ isOpen: false, bookingId: null })} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <h3 className="text-base font-bold text-black">Assign Driver & Vehicle</h3>
+              <button onClick={() => setAssignModal({ isOpen: false, bookingId: null })} className="text-black hover:text-gray-600">
                 <HiXMark className="w-5 h-5" />
               </button>
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-1">Driver *</label>
+                <label className="block text-xs font-bold text-black uppercase tracking-wide mb-1">Driver *</label>
                 <select
                   value={selectedDriver}
                   onChange={e => setSelectedDriver(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm text-black bg-white dark:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
                   <option value="">Select driver</option>
                   {drivers.map(d => <option key={d._id} value={d._id}>{d.name} ({d.mobileNumber})</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-1">Vehicle (optional)</label>
+                <label className="block text-xs font-bold text-black uppercase tracking-wide mb-1">Vehicle (optional)</label>
                 <select
                   value={selectedVehicle}
                   onChange={e => setSelectedVehicle(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm text-black bg-white dark:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
                   <option value="">Select vehicle</option>
                   {vehicles.map(v => <option key={v._id} value={v._id}>{v.cabNumber} – {v.modelName}</option>)}
@@ -509,8 +509,8 @@ export default function BookingsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 px-5 py-4 border-t dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50 rounded-b-xl">
-              <button onClick={() => setAssignModal({ isOpen: false, bookingId: null })} className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600">Cancel</button>
-              <button onClick={assignDriverAndVehicle} className="px-3 py-1.5 text-sm font-bold bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Assign</button>
+              <button onClick={() => setAssignModal({ isOpen: false, bookingId: null })} className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-md text-black hover:bg-gray-100">Cancel</button>
+              <button onClick={assignDriverAndVehicle} className="px-3 py-1.5 text-sm font-bold bg-indigo-600 text-black rounded-md hover:bg-indigo-700">Assign</button>
             </div>
           </div>
         </div>
@@ -520,20 +520,20 @@ export default function BookingsPage() {
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-10 overflow-y-auto subtle-scrollbar animate-in fade-in duration-300" onClick={() => setAddModalOpen(false)}>
           <div
-            className="bg-white dark:bg-slate-900 rounded-lg w-full max-w-2xl shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 relative mx-auto"
+            className="bg-white dark:bg-slate-900 rounded-lg w-full max-w-4xl shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 relative mx-auto"
             style={{ borderRadius: '0.5rem' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
             <div className="pt-8 pb-4 text-center">
-              <h3 className="text-2xl font-black tracking-widest uppercase text-slate-800 dark:text-white">Book Your Ride</h3>
+              <h3 className="text-xl font-bold tracking-widest uppercase text-black">Book Your Ride</h3>
               <div className="h-0.5 w-16 bg-[#EB664E] mx-auto mt-2 rounded-full"></div>
             </div>
 
             <div className="p-8 pt-2 space-y-6">
               {/* Pickup */}
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
                   <HiOutlineMapPin className="text-[#EB664E] text-sm" /> From (City / Airport)
                 </label>
                 <input
@@ -541,13 +541,13 @@ export default function BookingsPage() {
                   placeholder="Enter pick-up location"
                   value={newBooking.from}
                   onChange={e => setNewBooking({ ...newBooking, from: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 focus:ring-1 focus:ring-[#EB664E]/30 transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 focus:ring-1 focus:ring-[#EB664E]/30 transition-all placeholder:text-slate-400 font-medium text-black"
                 />
               </div>
 
               {/* Destination */}
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
                   <HiOutlineMapPin className="text-[#3b82f6] text-sm" /> Destination
                 </label>
                 <input
@@ -555,27 +555,27 @@ export default function BookingsPage() {
                   placeholder="Enter drop-off location"
                   value={newBooking.destination}
                   onChange={e => setNewBooking({ ...newBooking, destination: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#3b82f6]/50 focus:ring-1 focus:ring-[#3b82f6]/30 transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#3b82f6]/50 focus:ring-1 focus:ring-[#3b82f6]/30 transition-all placeholder:text-slate-400 font-medium text-black"
                 />
               </div>
 
               {/* Date & Time */}
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
                   <HiOutlineCalendar className="text-[#EB664E] text-sm" /> Travel Date & Time
                 </label>
                 <input
                   type="datetime-local"
                   value={newBooking.dateTime}
                   onChange={e => setNewBooking({ ...newBooking, dateTime: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-medium text-slate-800 dark:text-white"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-medium text-black"
                 />
               </div>
 
               {/* Name & Contact Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                  <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
                     <HiOutlineUser className="text-[#EB664E] text-sm" /> Name
                   </label>
                   <input
@@ -583,11 +583,11 @@ export default function BookingsPage() {
                     placeholder="Your name"
                     value={newBooking.name}
                     onChange={e => setNewBooking({ ...newBooking, name: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-medium text-black"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                  <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
                     <HiOutlinePhone className="text-[#3b82f6] text-sm" /> Contact
                   </label>
                   <input
@@ -599,22 +599,22 @@ export default function BookingsPage() {
                       const val = e.target.value.replace(/\D/g, '');
                       setNewBooking({ ...newBooking, contact: val });
                     }}
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#3b82f6]/50 transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#3b82f6]/50 transition-all placeholder:text-slate-400 font-medium text-black"
                   />
                 </div>
               </div>
 
               {/* Price Estimate */}
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                  <span className="text-[#EB664E] text-sm font-bold">₹</span> Price Estimate
+                <label className="flex items-center gap-2 text-xs font-bold text-black uppercase tracking-widest">
+                  <span className="text-black text-sm font-bold">₹</span> Price Estimate
                 </label>
                 <input
                   type="text"
                   placeholder="Start from ₹12/km"
                   value={newBooking.price}
                   onChange={e => setNewBooking({ ...newBooking, price: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-bold text-[#EB664E]"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-[#EB664E]/50 transition-all placeholder:text-slate-400 font-bold text-black"
                 />
               </div>
 
@@ -622,7 +622,7 @@ export default function BookingsPage() {
               <div className="flex items-center justify-end gap-2 pt-4">
                 <button
                   onClick={() => setAddModalOpen(false)}
-                  className="px-6 py-3 rounded-lg font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all uppercase tracking-widest text-xs"
+                  className="px-6 py-3 rounded-lg font-bold text-black hover:bg-slate-100 transition-all uppercase tracking-widest text-xs"
                 >
                   Cancel
                 </button>
@@ -639,7 +639,7 @@ export default function BookingsPage() {
             {/* Close button */}
             <button
               onClick={() => setAddModalOpen(false)}
-              className="absolute top-6 right-8 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+              className="absolute top-6 right-8 text-black hover:text-slate-600 transition-colors"
             >
               <HiXMark className="w-6 h-6" />
             </button>
