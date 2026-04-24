@@ -109,15 +109,15 @@ export default function CustomerSidebar({ isOpen, onClose, isCollapsed, setIsCol
                     }}
                     className={`flex items-center gap-4 px-6 py-3.5 transition-all duration-200 group relative ${isActive
                       ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-r-4 border-orange-500"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
+                      : "text-black dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
                       }`}
                   >
                     <item.icon
-                      className={`text-2xl shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-orange-600 dark:text-orange-400" : "group-hover:text-slate-900 dark:group-hover:text-white"
+                      className={`text-2xl shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-orange-600 dark:text-orange-400" : "text-black dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
                         }`}
                     />
                     {!isCollapsed && (
-                      <span className="font-bold text-[13px] tracking-tight whitespace-nowrap overflow-hidden">
+                      <span className="font-bold text-[15px] tracking-tight whitespace-nowrap overflow-hidden">
                         {item.name}
                       </span>
                     )}
