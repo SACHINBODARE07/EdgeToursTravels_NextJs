@@ -43,13 +43,12 @@ export async function POST(req: NextRequest) {
   if (existing) return NextResponse.json({ error: 'Email or mobile number already exists' }, { status: 400 });
   
   const temporaryPassword = Math.random().toString(36).slice(-8) + 'A1!';
-  const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
   
   let userData: any = {
     email,
     mobileNumber,
     name,
-    password: hashedPassword,
+    password: temporaryPassword,
     role,
   };
   

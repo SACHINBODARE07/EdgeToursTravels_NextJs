@@ -35,11 +35,10 @@ export async function POST(req: NextRequest) {
   const existing = await User.findOne({ $or: [{ email }, { mobileNumber: mobile }] });
   if (existing) return NextResponse.json({ error: 'Email or mobile already exists' }, { status: 400 });
 
-  const hashedPassword = await bcrypt.hash('Employee@123', 10);
   const employee = await User.create({
     email,
     mobileNumber: mobile,
-    password: hashedPassword,
+    password: 'Employee@123',
     name: fullName,
     role: 'employee',
     profileCompleted: true,

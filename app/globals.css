@@ -8,7 +8,7 @@
   --color-brand-secondary: #ffad1f;
   --color-brand-accent: #ff4d00;
   --color-bg-light: #f8fafc;
-  --font-outfit: "Outfit", sans-serif;
+  --font-outfit: var(--font-outfit);
 }
 
 @layer base {
@@ -74,7 +74,7 @@
 }
 
 body {
-  @apply bg-white dark:bg-[#0A1128] text-[#171717] dark:text-white transition-colors duration-300 antialiased;
+  @apply bg-white dark:bg-[#0A1128] text-[#171717] dark:text-white transition-colors duration-300 antialiased font-outfit;
 }
 
 @keyframes pulse-whatsapp {

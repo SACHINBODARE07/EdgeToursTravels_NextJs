@@ -204,13 +204,12 @@ export default function AvailableVehicles() {
         </div>
 
         <div className="p-4 md:p-6 lg:p-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles.map((vehicle) => (
               <div
                 key={vehicle._id}
-                className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm transition-all hover:shadow-md ${
-                  vehicle.status === 'maintenance' ? 'opacity-60' : ''
-                }`}
+                className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm transition-all hover:shadow-md ${vehicle.status === 'maintenance' ? 'opacity-60' : ''
+                  }`}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <HiOutlineTruck className="text-2xl text-orange-500 shrink-0" />
@@ -232,11 +231,10 @@ export default function AvailableVehicles() {
                 <button
                   onClick={() => openBookingModal(vehicle)}
                   disabled={vehicle.status === 'maintenance'}
-                  className={`w-full py-3 rounded-xl font-bold transition-all transform active:scale-[0.98] ${
-                    vehicle.status === 'maintenance'
-                      ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                      : 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/20'
-                  }`}
+                  className={`w-full py-3 rounded-xl font-bold transition-all transform active:scale-[0.98] ${vehicle.status === 'maintenance'
+                    ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20'
+                    }`}
                 >
                   {vehicle.status === 'maintenance' ? 'Not Available' : 'Book This Vehicle'}
                 </button>
@@ -284,7 +282,7 @@ export default function AvailableVehicles() {
               </div>
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button onClick={() => setIsModalOpen(false)} className="px-6 py-3 rounded-xl font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all uppercase text-xs">Cancel</button>
-                <button onClick={createBooking} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-black uppercase text-sm transition-all transform active:scale-[0.98] shadow-lg shadow-indigo-500/20 disabled:opacity-50">
+                <button onClick={createBooking} disabled={submitting} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-black uppercase text-sm transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/20 disabled:opacity-50">
                   {submitting ? 'Requesting...' : 'Request Ride'}
                 </button>
               </div>

@@ -20,7 +20,6 @@ const customerItems = [
   { name: "Dashboard", icon: HiOutlineViewGrid, href: "/customer-dashboard" },
   { name: "My Bookings", icon: HiOutlineCalendar, href: "/customer-dashboard/bookings" },
   { name: "Available Vehicles", icon: HiOutlineTruck, href: "/customer-dashboard/vehicles" },
-  { name: "Profile", icon: HiOutlineUser, href: "/customer-dashboard/profile" },
 ];
 
 interface SidebarProps {
