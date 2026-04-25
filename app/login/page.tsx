@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginUser, registerUser, storeAuthData } from '@/lib/auth';
 import Link from 'next/link';
+import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -26,6 +27,8 @@ export default function AuthPage() {
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   // OTP handlers
   const handleSendOtp = async () => {
@@ -184,7 +187,23 @@ export default function AuthPage() {
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Password</label>
-              <input type="password" placeholder="••••••••" required value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white outline-none" />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  required 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white outline-none pr-12" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                >
+                  {showPassword ? <HiOutlineEyeSlash size={20} /> : <HiOutlineEye size={20} />}
+                </button>
+              </div>
             </div>
             <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white font-black uppercase tracking-[0.2em] text-[11px] py-4.5 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] dark:shadow-none transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_20px_35px_-10px_rgba(79,70,229,0.5)] active:scale-95 disabled:opacity-50 mt-6 border border-white/10 flex items-center justify-center gap-3">
               {loading ? 'Authenticating...' : 'Enter Dashboard'}
@@ -253,7 +272,22 @@ export default function AuthPage() {
             </div>
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Password *</label>
-              <input type="password" required value={regPassword} onChange={e => setRegPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white" />
+              <div className="relative">
+                <input 
+                  type={showRegPassword ? "text" : "password"} 
+                  required 
+                  value={regPassword} 
+                  onChange={e => setRegPassword(e.target.value)} 
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white pr-12" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword(!showRegPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                >
+                  {showRegPassword ? <HiOutlineEyeSlash size={20} /> : <HiOutlineEye size={20} />}
+                </button>
+              </div>
             </div>
 
             <button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-lg transition-all active:scale-95 mt-4">
