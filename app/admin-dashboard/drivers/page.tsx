@@ -50,6 +50,13 @@ interface Driver {
     kycDocuments?: Record<string, string>;
     rejectionReason?: string;
     availabilityStatus?: 'available' | 'unavailable';
+     gender?: string;
+    presentAddress?: string;
+    permanentAddress?: string;
+    alternateMobile?: string;
+    aadhar?: string;
+    pan?: string;
+    highestQualification?: string;
   };
 }
 
